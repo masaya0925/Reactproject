@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const Hello = (props) => {
+
+const Hello = ({ name, age }) => {
+  const bornYear = () => new Date().getFullYear() - age
   return (
     <div>
-     <p> Hello {props.name}, you are {props.age} years old
-     </p>
+      <p>
+        Hello {name}, you are {age} years old
+      </p>
+      <p>So you were probably born in {bornYear()}</p>
     </div>
   )
 }
 
+/*
 const Footer = () => {
   return (
     <div>
@@ -16,26 +21,34 @@ const Footer = () => {
     </div>
   )
 }
+*/
 
 const App = () => {
+  const [ counter, setCounter ] = useState(0)
+
+  setTimeout(
+    () => setCounter(counter + 1),
+    1000
+  )
+
+  console.log('rendering...', counter)
+
   const name = 'Kaede'
   const age  = 17
 
   return (
     <>
+      {counter}
      <h1> Greetings </h1>
      <Hello name = "Kirie" age = {17 + 5} />
      <Hello name = {name}  age = {age} />
-     <Footer />
     </>
   )
-
 /*
   const now = new Date()
   const a = 10
   const b = 20
 */
-  //console.log('Hello from component')
 /*HTML*/
 /* return (
   <div>
@@ -60,7 +73,5 @@ const App = () => {
   )
 */
 }
-
-//hi
 
 export default App
