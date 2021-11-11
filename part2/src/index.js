@@ -23,9 +23,6 @@ const notes = [
   }
 ]
 
-const result = notes.map(note => <li key = {note.id}>{note.content}</li>)
-console.log(result)
-
 ReactDOM.render(
     <App notes = {notes} />,
   document.getElementById('root')
