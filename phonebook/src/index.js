@@ -1,17 +1,30 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom'
+import App from './App'
+
+const persons = [
+  {
+    name: 'Arto Hellas',
+    number: '090-1234-5678',
+    id: 1
+  },
+  {
+    name: 'Ada Lovelace',
+    number: '080-2345-6789',
+    id: 2
+  },
+  {
+    name: 'Dan Abratov',
+    number: '070-2356-1247',
+    id: 3
+  },
+  {
+    name: 'Lucy Evlabve',
+    number: '080-9754-5387',
+    id: 4
+  }
+]
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <App persons = {persons}/>,
   document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+)
