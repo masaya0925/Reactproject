@@ -1,13 +1,25 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
+import axios from 'axios'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 
 const App = (props) => {
-  const [ persons, setPersons ] = useState(props.persons)
+  const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNum, setNewNum] = useState('')
   const [ newFilter, setNewFilter] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    axios
+    .get('http://localhost:3001/persons')
+    .then(response => {
+      console.log('promise fulfilled')
+      setPersons(response.data)
+    })
+  }, [])
+  console.log('render', persons.length, 'persons')
 
   const addNumbers = (event) => {
     event.preventDefault()
@@ -39,7 +51,7 @@ const App = (props) => {
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value)
   }
-  console.log(persons.map(person => person.name.toLowerCase().includes(newFilter.toLowerCase())))
+  //console.log(persons.map(person => person.name.toLowerCase().includes(newFilter.toLowerCase())))
   return (
     <div>
       <h2>Phonebook</h2>
