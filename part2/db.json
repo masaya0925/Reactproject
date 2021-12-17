@@ -21,13 +21,13 @@
     {
       "content": "Hi",
       "date": "2021-12-10T05:47:07.355Z",
-      "important": true,
+      "important": false,
       "id": 4
     },
     {
       "content": "ez boiz",
       "date": "2021-12-10T06:07:12.783Z",
-      "important": true,
+      "important": false,
       "id": 5
     }
   ]
