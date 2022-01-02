@@ -3,12 +3,15 @@ import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import personservice from './services/persons'
+import Notification from './components/Notification'
 
 const App = (props) => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNum, setNewNum] = useState('')
   const [ newFilter, setNewFilter] = useState('')
+  const [ message, setMessage] = useState(null)
+  const [ type, setType] = useState('')
 
   useEffect(() => {
     console.log('effect')
@@ -32,6 +35,15 @@ const App = (props) => {
           .update(changedperson.id, changedperson)
           .then(returnedPersons => {
             setPersons(persons.map(person => person.id !== changedperson.id ? person : returnedPersons))
+            setMessage(`Changed ${newName}'s number`)
+            setType('success')
+            setTimeout(() => {setMessage(null)}, 5000)
+          })
+          .catch(error => {
+            setMessage(`${newName} has already been deleted from server`)
+            setType('error')
+            setTimeout(() => {setMessage(null)}, 5000)
+            setPersons(persons.filter(p => p.id !== sameName.id))
           })
       }
     } else {
@@ -43,6 +55,9 @@ const App = (props) => {
         .create(perObj)
         .then(returnedPersons => {
           setPersons(persons.concat(returnedPersons))
+          setMessage(`Added  ${newName}`)
+          setType('success')
+          setTimeout(() => {setMessage(null)}, 5000)
         })
     }
     setNewName('')
@@ -55,6 +70,9 @@ const App = (props) => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+          setMessage(`Deleted ${name}`)
+          setType('success')
+          setTimeout(() => {setMessage(null)}, 5000)
         })
     }
   }
@@ -74,6 +92,7 @@ const App = (props) => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message = {message} type = {type}/>
       <Filter newFilter = {newFilter} handleFilterChange = {handleFilterChange}/>
       <h3>add a new</h3>
       <PersonForm addNumbers = {addNumbers} newName = {newName} newNum = {newNum}
