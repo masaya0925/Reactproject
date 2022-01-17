@@ -1,6 +1,4 @@
-const { response, request } = require("express");
-const express = require("express");
-const res = require("express/lib/response");
+const express = require("express")
 const app = express()
 
 app.use(express.json())
