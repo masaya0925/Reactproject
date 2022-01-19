@@ -1,7 +1,19 @@
 const express = require("express")
 const app = express()
+const morgan = require("morgan")
 
 app.use(express.json())
+//custom formatを使ってHTTP POST request dataを追加 
+app.use(morgan((tokens, request, response) => {
+    return [
+      tokens.method(request, response),
+      tokens.url(request, response),
+      tokens.status(request, response),
+      tokens.res(request, response, 'content-length'), '-',
+      tokens['response-time'](request, response), 'ms',
+      JSON.stringify(request.body) //JSON文字列に変換
+    ].join(' ')
+  }))
 
 let persons = [
   {
@@ -69,7 +81,7 @@ app.post('/api/persons', (request, response) => {
     }
 
     persons = persons.concat(person)
-    console.log(person);
+    //console.log(person);
     response.json(person)
 })
 
