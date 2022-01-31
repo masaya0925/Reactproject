@@ -1,0 +1,3 @@
+このディレクトリをherokuにdeployするには、このprojectをルートにしたgitディレクトリを作成すること。
+
+うまく行かなかったら、まずpackage.jsonのheroku関係("build:ui"から下)コマンドのディレクトリパスが合ってるか確認。
