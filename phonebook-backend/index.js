@@ -1,8 +1,11 @@
 const express = require("express")
+const cors = require("cors")
 const app = express()
 const morgan = require("morgan")
 
+app.use(express.static("build"))
 app.use(express.json())
+app.use(cors())
 //custom formatを使ってHTTP POST request dataを追加 
 app.use(morgan((tokens, request, response) => {
     return [
