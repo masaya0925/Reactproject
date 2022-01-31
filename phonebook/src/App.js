@@ -1,31 +1,80 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import personservice from './services/persons'
+import Notification from './components/Notification'
 
 const App = (props) => {
-  const [ persons, setPersons ] = useState(props.persons)
+  const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNum, setNewNum] = useState('')
   const [ newFilter, setNewFilter] = useState('')
+  const [ message, setMessage] = useState(null)
+  const [ type, setType] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    personservice
+    .getAll()
+    .then(initialPersons => {
+      console.log('promise fulfilled')
+      setPersons(initialPersons)
+    })
+  }, [])
+
+  const sameName = persons.find(person => person.name === newName)
 
   const addNumbers = (event) => {
     event.preventDefault()
-  if(persons.some(person => person.name === newName)){ //名前の重複確認
-    console.log('sameName')
-    window.alert(newName + ' is already added to phonebook')
-  } else if(persons.some(person => person.number === newNum)){ //番号の重複確認
-    console.log('sameNum')
-    window.alert(newNum + ' is already added to phonebook')
-  } else {
-    const perObj = {
-      name: newName,
-      number: newNum
+    if(sameName) {
+      if(window.confirm(newName + ' is already added to phonebook, replace the old number with a new one?')){
+        const changedperson = {...sameName, number: newNum}
+        console.log('changed... ',changedperson)
+        personservice
+          .update(changedperson.id, changedperson)
+          .then(returnedPersons => {
+            setPersons(persons.map(person => person.id !== changedperson.id ? person : returnedPersons))
+            setMessage(`Changed ${newName}'s number`)
+            setType('success')
+            setTimeout(() => {setMessage(null)}, 5000)
+          })
+          .catch(error => {
+            setMessage(`${newName} has already been deleted from server`)
+            setType('error')
+            setTimeout(() => {setMessage(null)}, 5000)
+            setPersons(persons.filter(p => p.id !== sameName.id))
+          })
+      }
+    } else {
+      const perObj = {
+        name: newName,
+        number: newNum
+      }
+      personservice
+        .create(perObj)
+        .then(returnedPersons => {
+          setPersons(persons.concat(returnedPersons))
+          setMessage(`Added  ${newName}`)
+          setType('success')
+          setTimeout(() => {setMessage(null)}, 5000)
+        })
     }
-    setPersons(persons.concat(perObj))
-  }
     setNewName('')
     setNewNum('')
+  }
+
+  const deleteNumbers = (id, name) => {
+    if(window.confirm(`Delete ${name}`)) {
+      personservice
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          setMessage(`Deleted ${name}`)
+          setType('success')
+          setTimeout(() => {setMessage(null)}, 5000)
+        })
+    }
   }
 
   const handleNameChange = (event) => {
@@ -39,16 +88,17 @@ const App = (props) => {
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value)
   }
-  console.log(persons.map(person => person.name.toLowerCase().includes(newFilter.toLowerCase())))
+  //console.log(persons.map(person => person.name.toLowerCase().includes(newFilter.toLowerCase())))
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message = {message} type = {type}/>
       <Filter newFilter = {newFilter} handleFilterChange = {handleFilterChange}/>
       <h3>add a new</h3>
       <PersonForm addNumbers = {addNumbers} newName = {newName} newNum = {newNum}
         handleNameChange = {handleNameChange} handleNumberChange = {handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons persons = {persons} newFilter = {newFilter}/>
+      <Persons persons = {persons} newFilter = {newFilter} remove = {deleteNumbers}/>
     </div>
   )
 }
