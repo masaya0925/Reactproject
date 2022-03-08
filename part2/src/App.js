@@ -37,6 +37,9 @@ const App = () => {
         setNotes(notes.concat(returnedNote))
         setNewNote('')
       })
+      .catch(error => {
+        console.log(error.response.data)
+      })
   }
 
   const toggleImportanceOf = (id) => {

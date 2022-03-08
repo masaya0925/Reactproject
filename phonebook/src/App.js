@@ -21,6 +21,9 @@ const App = (props) => {
       console.log('promise fulfilled')
       setPersons(initialPersons)
     })
+    .catch(error => {
+      console.log(error.response.data)
+    })
   }, [])
 
   const sameName = persons.find(person => person.name === newName)
@@ -40,10 +43,14 @@ const App = (props) => {
             setTimeout(() => {setMessage(null)}, 5000)
           })
           .catch(error => {
-            setMessage(`${newName} has already been deleted from server`)
             setType('error')
+            if(error.response.status === 404){
+              setMessage(`${newName} has already been deleted from server`)
+              setPersons(persons.filter(p => p.id !== sameName.id))
+            } else {
+              setMessage(error.response.data.error)
+            }
             setTimeout(() => {setMessage(null)}, 5000)
-            setPersons(persons.filter(p => p.id !== sameName.id))
           })
       }
     } else {
@@ -57,6 +64,11 @@ const App = (props) => {
           setPersons(persons.concat(returnedPersons))
           setMessage(`Added  ${newName}`)
           setType('success')
+          setTimeout(() => {setMessage(null)}, 5000)
+        })
+        .catch(error => {
+          setMessage(error.response.data.error)
+          setType('error')
           setTimeout(() => {setMessage(null)}, 5000)
         })
     }
