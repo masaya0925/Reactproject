@@ -11,11 +11,31 @@ interface RatingObject {
     rating: number
     ratingDescription: string
 }
+interface DaysHour {
+    hour: Array<number>
+    target:number
+}
+
+const parseExerciseArguments = (args: Array<string>): DaysHour => {
+    if(args.length !== 10) {
+         throw new Error('Not enough or too many arguments') //引数が足らないとErrorを投げる
+    }
+
+    const target = Number(args[2])
+    const hour = args.slice(3).map(num => Number(num))  //targetの次の引数から新たな配列を作成
+
+// console.log('target:',target,'hour:',hour)
+
+    if(!isNaN(target) && hour.filter(num => isNaN(num)).length === 0){ //無効な値だったらError投げる 
+        return {target, hour}
+    } else {
+        throw new Error('must be number')
+    }
+}
 
 const averageRate = (daily: number, target: number): RatingObject => {
     const rate = daily / target
-    console.log(rate)
-    
+
     if(rate < 0.5){
         return {rating: 1, ratingDescription: 'bad'}
     } else if(rate < 1.2) {
@@ -45,5 +65,5 @@ const calculateExercises = (args: Array<number>, target: number): ResultObject =
         average
     }
 }
-
-console.log(calculateExercises([2,3,0,4,1,0,5], 2))
+const {target, hour} = parseExerciseArguments(process.argv)
+console.log(calculateExercises(hour, target))
