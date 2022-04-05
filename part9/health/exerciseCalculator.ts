@@ -20,11 +20,8 @@ const parseExerciseArguments = (args: Array<string>): DaysHour => {
     if(args.length !== 10) {
          throw new Error('Not enough or too many arguments') //引数が足らないとErrorを投げる
     }
-
     const target = Number(args[2])
     const hour = args.slice(3).map(num => Number(num))  //targetの次の引数から新たな配列を作成
-
-// console.log('target:',target,'hour:',hour)
 
     if(!isNaN(target) && hour.filter(num => isNaN(num)).length === 0){ //無効な値だったらError投げる 
         return {target, hour}
@@ -46,7 +43,9 @@ const averageRate = (daily: number, target: number): RatingObject => {
         return {rating: 4, ratingDescription: 'great'}
     } else if(rate >= 2.5) {
         return {rating: 5, ratingDescription: 'perfect'}
-    } 
+    } else {
+        return {rating: 0, ratingDescription:'invalid number'}
+    }
 }
 
 const calculateExercises = (args: Array<number>, target: number): ResultObject => {
