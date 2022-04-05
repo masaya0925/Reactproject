@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts-node": "ts-node",
     "bmi": "ts-node bmiCalculator.ts",
-    "exercise": "ts-node exerciseCalculator.ts"
+    "exercise": "ts-node exerciseCalculator.ts",
+    "dev": "ts-node-dev index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +18,8 @@
     "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "express": "^4.17.3"
   }
 }
