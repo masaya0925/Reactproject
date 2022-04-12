@@ -7,7 +7,7 @@
     "plugins": ["@typescript-eslint"],
     "env": {
         "node": true,
-        "es6": true
+        "es6":true
     },
     "rules": {
         "@typescript-eslint/semi":["error"],
