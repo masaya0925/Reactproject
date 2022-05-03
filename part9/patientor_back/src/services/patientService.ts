@@ -1,7 +1,9 @@
-import { patients } from '../../data/patients';
+import { patientsEntries } from '../../data/patients';
 import { diagnoses } from '../../data/diagnoses';
+import { v1 as uuid } from 'uuid';
+import { patientsEntry, diagnosesEntry , ssnLessPatientsEntry, NewPatientEntry} from '../types';
 
-import { patientsEntry, diagnosesEntry , ssnLessPatientsEntry} from '../types';
+const patients: Array<patientsEntry> = patientsEntries; 
 
 export const getPatient = (): Array<patientsEntry> => {
     return patients;
@@ -19,4 +21,13 @@ export const getSslLessPatientsEntries = (): ssnLessPatientsEntry[] => {
         gender,
         occupation
     }));
+};
+
+export const addPatient = (entry: NewPatientEntry): patientsEntry => {
+    const newPatientEntry = {
+        id: uuid(),
+        ...entry
+    };
+    patients.push(newPatientEntry);
+    return newPatientEntry;
 };

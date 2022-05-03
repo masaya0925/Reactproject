@@ -1,7 +1,8 @@
-import { patientsEntry } from '../src/types';
-import { toNewPatientEntry } from '../src/utils';
-
- const data =  [
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.patientsEntries = void 0;
+const utils_1 = require("../src/utils");
+const data = [
     {
         "id": "d2773336-f723-11e9-8f0b-362b9e155667",
         "name": "John McClane",
@@ -43,9 +44,8 @@ import { toNewPatientEntry } from '../src/utils';
         "occupation": "Digital evangelist"
     }
 ];
-
- export const patientsEntries: patientsEntry[] = data.map(obj => {
-    const object = toNewPatientEntry(obj) as patientsEntry;
+exports.patientsEntries = data.map(obj => {
+    const object = (0, utils_1.toNewPatientEntry)(obj);
     object.id = obj.id;
     return object;
 });
