@@ -6,3 +6,5 @@ export type BlogType = {
   likes: number,
   __v: number
 };
+
+export type BlogTypeV2 = Omit<BlogType, '_id' | 'url' | '__v'>;
