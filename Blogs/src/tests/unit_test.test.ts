@@ -1,4 +1,4 @@
-import { dummy, favoriteBlog, totalLikes } from "../utils/list_helper";
+import { dummy, favoriteBlog, mostBlog, totalLikes } from "../utils/list_helper";
 import { BlogType } from "../utils/types";
 
 const onlyOneBlog: BlogType[] = [
@@ -145,4 +145,30 @@ describe('favoriteBlog', () => {
         const result = favoriteBlog([]);
         expect(result).toBe(null);
     });
+});
+
+describe('mostBlog', () => {
+    test('mostBlog Author', () => {
+       const result = mostBlog(blogList);
+       const answer = {
+           author: "Robert C. Martin",
+           blogs: 3
+       };
+      expect(result).toEqual(answer);
+    });
+
+    test('many mostBlog Author', () => {
+       const result = mostBlog(blogList2);
+       const answer = {
+          author: "Edsger W. Dijkstra",
+          blogs: 2
+       };
+       expect(result).toEqual(answer);
+    });
+
+    test('of empty mostBlog', () => {
+       const result = mostBlog([]);
+       expect(result).toBe(null);
+    });
+
 });

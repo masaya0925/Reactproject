@@ -1,4 +1,5 @@
-import { BlogType, BlogTypeV2 } from "./types";
+import { BlogType, BlogTypeV2, mostBlogAuthor } from './types';
+import _ from 'lodash';
 
 export const dummy = (_blogs: BlogType[]): number => {
     return 1;
@@ -11,7 +12,7 @@ export const totalLikes = (blogs: BlogType[]): number => {
 export const favoriteBlog = (blogs: BlogType[]): BlogTypeV2 | null => {
     const mostLike = Math.max(...blogs.map(blog => blog.likes));
     const mostLikeBlog = blogs.find(blog => blog.likes === mostLike);
-    console.log(mostLikeBlog);
+    //console.log(mostLikeBlog);
     
     if(mostLikeBlog === undefined) {
         return null;
@@ -21,4 +22,23 @@ export const favoriteBlog = (blogs: BlogType[]): BlogTypeV2 | null => {
        author: mostLikeBlog.author,
         likes: mostLikeBlog.likes
     };    
+};
+
+export const mostBlog = (blogs: BlogType[]): mostBlogAuthor | null => {
+    const countBlog = _.countBy(blogs.map(blog => blog.author));
+    const mostBlog = Math.max(...Object.values(countBlog));
+    const mostBlogAuthor = _.findKey(countBlog, (count) => count === mostBlog);
+
+    //console.log('sort by:',countBlog);
+    //console.log('most by:',mostBlog);
+    //console.log('most blog Author:', mostBlogAuthor);
+
+    if(mostBlogAuthor === undefined) {
+        return null;
+    }
+
+    return { 
+        author: mostBlogAuthor,
+        blogs: mostBlog
+     };
 };
