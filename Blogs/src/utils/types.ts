@@ -7,9 +7,14 @@ export type BlogType = {
   __v: number
 };
 
-export type mostBlogAuthor = {
+export type MostBlogAuthor = {
     author: string,
     blogs: number
+};
+
+export type MostLikesBlogAuthor = {
+    author: string,
+    likes: number
 };
 
 export type BlogTypeV2 = Omit<BlogType, '_id' | 'url' | '__v'>;

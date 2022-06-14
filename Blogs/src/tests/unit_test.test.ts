@@ -1,4 +1,4 @@
-import { dummy, favoriteBlog, mostBlog, totalLikes } from "../utils/list_helper";
+import { dummy, favoriteBlog, mostBlog, mostLikes, totalLikes } from "../utils/list_helper";
 import { BlogType } from "../utils/types";
 
 const onlyOneBlog: BlogType[] = [
@@ -68,7 +68,7 @@ const blogList2: BlogType[] = [
         title: "Go To Statement Considered Harmful",
         author: "Edsger W. Dijkstra",
         url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-        likes: 5,
+        likes: 10,
         __v: 0
     },
     {
@@ -148,6 +148,7 @@ describe('favoriteBlog', () => {
 });
 
 describe('mostBlog', () => {
+
     test('mostBlog Author', () => {
        const result = mostBlog(blogList);
        const answer = {
@@ -171,4 +172,30 @@ describe('mostBlog', () => {
        expect(result).toBe(null);
     });
 
+});
+
+describe('mostLike', () => {
+
+    test('mostLikeBlog Author', () => {
+       const result = mostLikes(blogList);
+       const answer = {
+           author: "Edsger W. Dijkstra",
+           likes: 17
+       };
+       expect(result).toEqual(answer);
+    });
+
+    test('many mostLikeBLog Author', () => {
+        const result = mostLikes(blogList2);
+        const answer = {
+            author: "Edsger W. Dijkstra",
+            likes: 22
+        };
+        expect(result).toEqual(answer);
+    });
+
+    test('empty of mostLikeBlog', () => {
+        const result = mostLikes([]);
+        expect(result).toBe(undefined);
+    });
 });

@@ -1,4 +1,4 @@
-import { BlogType, BlogTypeV2, mostBlogAuthor } from './types';
+import { BlogType, BlogTypeV2, MostBlogAuthor, MostLikesBlogAuthor } from './types';
 import _ from 'lodash';
 
 export const dummy = (_blogs: BlogType[]): number => {
@@ -24,7 +24,7 @@ export const favoriteBlog = (blogs: BlogType[]): BlogTypeV2 | null => {
     };    
 };
 
-export const mostBlog = (blogs: BlogType[]): mostBlogAuthor | null => {
+export const mostBlog = (blogs: BlogType[]): MostBlogAuthor | null => {
     const countBlog = _.countBy(blogs.map(blog => blog.author));
     const mostBlog = Math.max(...Object.values(countBlog));
     const mostBlogAuthor = _.findKey(countBlog, (count) => count === mostBlog);
@@ -42,3 +42,22 @@ export const mostBlog = (blogs: BlogType[]): mostBlogAuthor | null => {
         blogs: mostBlog
      };
 };
+
+export const mostLikes = (blogs: BlogType[]): MostLikesBlogAuthor | undefined => {
+    const groupAuthor = _.groupBy(blogs, 'author');
+    const authors = Object.keys(groupAuthor);
+
+    const authorLikeCounter = authors.reduce((ary: MostLikesBlogAuthor[], author) => {
+        const total = totalLikes(groupAuthor[author]);
+        return ary.concat([{author, likes: total}]);
+    },[]);
+
+    const mostLike = Math.max(...authorLikeCounter.map(author => author.likes));
+
+    //console.log('group by:', groupAuthor);
+    //console.log('likes :', authorLikeCounter);
+    //console.log('mostLike :', mostLike);
+    
+    return authorLikeCounter.find(author => author.likes === mostLike);
+};
+
