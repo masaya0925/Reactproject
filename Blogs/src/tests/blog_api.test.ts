@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import supertest from 'supertest';
-import { initialBlogs } from './test_helper';
+import { initialBlogs } from './test_helper.test';
 import { app } from '../app';
 
 const api = supertest(app);
