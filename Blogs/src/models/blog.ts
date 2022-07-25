@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ReturnedObject } from "../utils/types";
 
 const blogSchema = new mongoose.Schema({
     title: String,
@@ -8,9 +9,10 @@ const blogSchema = new mongoose.Schema({
 });
 
 blogSchema.set('toJSON', {
-  transform: (_document, returnedObject) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    returnedObject.id = returnedObject._id.toString();
+  transform: (_document: unknown, returnedObject: ReturnedObject) => {
+    if(returnedObject._id !== undefined) {
+      returnedObject.id = returnedObject._id.toString();
+    }
     delete returnedObject._id;
     delete returnedObject.__v;
   }

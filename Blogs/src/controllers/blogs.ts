@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
 import { Blog } from '../models/blog';
 
@@ -11,14 +12,38 @@ blogRouter.get('/', (_req, res) => {
 });
 
 blogRouter.post('/', (req, res) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const blog = new Blog(req.body);
+  void(async () => {
+    const body = req.body;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  void blog
-    .save()
-    .then((result: unknown) => {
-        res.status(201).json(result);
-    });
+    if(body.title === undefined || body.url === undefined) {
+       res.status(400).end();
+    } else {
+      const newBlog = new Blog({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes:body.likes
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const savedBlog = await newBlog.save();
+      res.status(201).json(savedBlog);
+    }
+  })();
 });
 
+blogRouter.put('/:id', (req, res) => {
+  void(async () => {
+    const body = req.body;
+
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes
+    };
+
+    const update =  await Blog.findByIdAndUpdate(req.params.id, blog, { new: true });
+    res.status(201).json(update);
+
+  })();
+});

@@ -17,4 +17,10 @@ export type MostLikesBlogAuthor = {
     likes: number
 };
 
+export type ReturnedObject = {
+    _id?: string,
+    __v?: string,
+    id?: string
+};
+
 export type BlogTypeV2 = Omit<BlogType, '_id' | 'url' | '__v'>;
