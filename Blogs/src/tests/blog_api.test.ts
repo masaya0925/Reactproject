@@ -86,7 +86,7 @@ test('likes property is missing from the request',async () => {
     await api
     .put(`/api/blogs/${findLikeLess.id}`)
     .send(addLikes)
-    .expect(201);
+    .expect(204);
 
     const blogs = await blogsInDb();
 
@@ -108,6 +108,52 @@ test('blog without content is not added',async () => {
 
   const noteAtEnd = await blogsInDb();
   expect(noteAtEnd).toHaveLength(initialBlogs.length);
+});
+
+test('deleting a single blog post',async () => {
+  const blogAtStart = await blogsInDb();
+
+  const blogToDelete = blogAtStart[0];
+  
+  await api
+   .delete(`/api/blogs/${blogToDelete.id}`)
+   .expect(204);
+
+  const blogsAtEnd = await blogsInDb();
+
+  expect(blogsAtEnd).toHaveLength(initialBlogs.length - 1);
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  const contents = blogsAtEnd.map(b => b.title);
+
+  expect(contents).not.toContain(blogToDelete.title);
+
+});
+
+test('updating the information of an individual blog post',async () => {
+  const blogAtStart = await blogsInDb();
+
+  const updateBlog = blogAtStart[0];
+
+  console.log('before:', updateBlog);
+
+  const modifyBlog = { 
+    likes: 10 
+  }; 
+
+  await api
+   .put(`/api/blogs/${updateBlog.id}`)
+   .send(modifyBlog)
+   .expect(204);
+  
+  const blogAtEnd = await blogsInDb();
+
+  const updatedBlog = blogAtEnd[0];
+  
+  console.log('after:', updatedBlog);
+  
+  expect(blogAtEnd).toContainEqual({...updateBlog, ...modifyBlog});
+
 });
 
 afterAll(() => {
