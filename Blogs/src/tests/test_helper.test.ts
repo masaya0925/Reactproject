@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Blog } from '../models/blog';
+import { User } from '../models/user';
 import { BlogType } from '../utils/types';
 
 export type TestBlog = Omit<BlogType, '_id' | '__v'>;
@@ -20,6 +23,10 @@ export const initialBlogs: TestBlog[] = [
 
 export const blogsInDb = async () => {
   const blogs = await Blog.find({});
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
   return blogs.map(blog => blog.toJSON());
+};
+
+export const usersInDb =async () => {
+  const users = await User.find({});
+  return users.map(user => user.toJSON());
 };

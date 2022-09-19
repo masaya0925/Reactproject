@@ -1,0 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import  express  from "express";
+import { User } from "../models/user";
+import { toNewUser } from "../utils/functions";
+
+export const userRouter = express.Router();
+
+userRouter.get('/', (_req, res) => {
+  void(async () => {
+    const users = await User.find({});
+    res.json(users);
+  })();
+});
+
+userRouter.post('/', (req, res) => {
+  void(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const newUser = new User(await toNewUser(req.body));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const savedUser = await newUser.save();
+
+      res.status(201).json(savedUser);
+  })();
+  
+});

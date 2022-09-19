@@ -20,7 +20,24 @@ export type MostLikesBlogAuthor = {
 export type ReturnedObject = {
     _id?: string,
     __v?: string,
-    id?: string
+    id?: string,
+    passwordHash?: string
 };
+
+export type toNewUserParams = {
+    username: unknown,
+    name: unknown,
+    password: unknown
+};
+
+export type UserType = {
+    id: string,
+    username: string,
+    name: string,
+    passwordHash: string,
+    blogs: string[]
+};
+
+export type NewUser = Omit<UserType, 'id'>;
 
 export type BlogTypeV2 = Omit<BlogType, '_id' | 'url' | '__v'>;
