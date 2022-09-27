@@ -12,14 +12,17 @@ userRouter.get('/', (_req, res) => {
   })();
 });
 
-userRouter.post('/', (req, res) => {
+userRouter.post('/', (req, res, next) => {
   void(async () => {
+    try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const newUser = new User(await toNewUser(req.body));
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const savedUser = await newUser.save();
-
       res.status(201).json(savedUser);
+    } catch (err) {
+      next(err);
+    }  
   })();
   
 });
