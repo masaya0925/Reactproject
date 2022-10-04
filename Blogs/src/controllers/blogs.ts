@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
 import { Blog } from '../models/blog';
+import { User } from '../models/user';
 
 export const blogRouter = express.Router();
 
 blogRouter.get('/', (_req, res) => {
   void(async () => {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1});
     res.json(blogs);
   })();
 });
@@ -15,6 +17,8 @@ blogRouter.post('/', (req, res) => {
   void(async () => {
     const body = req.body;
 
+    const user = await User.findById(body.userId);
+
     if(body.title === undefined || body.url === undefined) {
        res.status(400).end();
     } else {
@@ -22,10 +26,14 @@ blogRouter.post('/', (req, res) => {
         title: body.title,
         author: body.author,
         url: body.url,
-        likes:body.likes
+        likes:body.likes,
+        user: user._id
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const savedBlog = await newBlog.save();
+
+      user.blogs = user.blogs.concat(savedBlog.id);
+      await user.save();
+
       res.status(201).json(savedBlog);
     }
   })();
@@ -39,7 +47,8 @@ blogRouter.put('/:id', (req, res) => {
       title: body.title,
       author: body.author,
       url: body.url,
-      likes: body.likes
+      likes: body.likes,
+      user: body.user
     };
 
     const update =  await Blog.findByIdAndUpdate(req.params.id, blog, { new: true });

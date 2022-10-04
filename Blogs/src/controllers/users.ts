@@ -7,7 +7,8 @@ export const userRouter = express.Router();
 
 userRouter.get('/', (_req, res) => {
   void(async () => {
-    const users = await User.find({});
+    const users = await User.find({})
+                        .populate('blogs', { url: 1, title: 1, author: 1, id: 1});
     res.json(users);
   })();
 });
