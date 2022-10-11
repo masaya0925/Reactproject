@@ -38,6 +38,11 @@ export type UserType = {
     blogs: string[]
 };
 
+export type UserToken = {
+    username: string,
+    id: string
+};
+
 export type NewUser = Omit<UserType, 'id'>;
 
 export type BlogTypeV2 = Omit<BlogType, '_id' | 'url' | '__v'>;

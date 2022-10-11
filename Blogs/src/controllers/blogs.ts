@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
+import  jwt  from 'jsonwebtoken';
 import { Blog } from '../models/blog';
 import { User } from '../models/user';
+import { SECRET } from '../utils/config';
+import { UserToken } from '../utils/types';
 
 export const blogRouter = express.Router();
 
@@ -13,29 +16,61 @@ blogRouter.get('/', (_req, res) => {
   })();
 });
 
-blogRouter.post('/', (req, res) => {
+const getTokenFrom = (req: express.Request) => {
+  const authorization = req.get('authorization');
+  if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7);
+  }
+  return null;
+};
+
+blogRouter.post('/', (req, res, next) => {
   void(async () => {
-    const body = req.body;
+    try {
+      const body = req.body;
+  
+      const token = getTokenFrom(req);
+  
+      if(token === null) {
+        res.status(401).json({ error: 'invalid token'});
+        return;
+      }
+  
+      if(SECRET === undefined) {
+       throw new Error('Environment variable SECRET is not given.');
+      }
+  
+      const decodedTokenNever = jwt.verify(token, SECRET);
+  
+      const decodedToken = decodedTokenNever as UserToken;
+  
+      if(!decodedToken.id) {
+        res.status(401).json({error: 'token missing or invalid'});
+        return;
+      }
+  
+      const user = await User.findById(decodedToken.id);
 
-    const user = await User.findById(body.userId);
+      if(body.title === undefined || body.url === undefined) {
+         res.status(400).end();
+      } else {
+        const newBlog = new Blog({
+          title: body.title,
+          author: body.author,
+          url: body.url,
+          likes:body.likes,
+          user: user._id
+        });
+        const savedBlog = await newBlog.save();
 
-    if(body.title === undefined || body.url === undefined) {
-       res.status(400).end();
-    } else {
-      const newBlog = new Blog({
-        title: body.title,
-        author: body.author,
-        url: body.url,
-        likes:body.likes,
-        user: user._id
-      });
-      const savedBlog = await newBlog.save();
+        user.blogs = user.blogs.concat(savedBlog.id);
+        await user.save();
 
-      user.blogs = user.blogs.concat(savedBlog.id);
-      await user.save();
-
-      res.status(201).json(savedBlog);
-    }
+        res.status(201).json(savedBlog);
+      }
+    } catch (e) {
+      next(e);
+    }  
   })();
 });
 

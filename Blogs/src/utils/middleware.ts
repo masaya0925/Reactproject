@@ -20,6 +20,8 @@ export const errorHandler = (error: Error, _req: Request, res: Response, next: N
      res.status(400).send({error: 'malformatted id' });
   } else if(error.name === 'ValidationError') {
      res.status(400).json({error: error.message});
+  } else if(error.name === 'JsonWebTokenError') {
+     res.status(401).json({error: error.message});
   }
   next(error);
 };
