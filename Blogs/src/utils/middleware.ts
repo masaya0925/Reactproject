@@ -22,6 +22,16 @@ export const errorHandler = (error: Error, _req: Request, res: Response, next: N
      res.status(400).json({error: error.message});
   } else if(error.name === 'JsonWebTokenError') {
      res.status(401).json({error: error.message});
+  } else if(error.name === 'TokenExpiredError') {
+    res.status(401).json({error: 'token expired'});
   }
   next(error);
+};
+
+export const tokenExtractor = (req: Request, _res: Response, next: NextFunction) => {
+    const authorization = req.get('authorization');
+    if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
+      req.token = authorization.substring(7);
+    }
+    next();
 };

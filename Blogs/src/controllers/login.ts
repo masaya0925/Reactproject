@@ -33,7 +33,7 @@ loginRouter.post('/', (req, res) => {
             throw new Error('Environment variable SECRET is not given.');
         }
 
-        const token = jwt.sign(userForToken, SECRET);
+        const token = jwt.sign(userForToken, SECRET, {expiresIn: 60 * 60});
 
         res.status(200)
            .send({token, username: user.username, name: user.name});

@@ -16,22 +16,12 @@ blogRouter.get('/', (_req, res) => {
   })();
 });
 
-const getTokenFrom = (req: express.Request) => {
-  const authorization = req.get('authorization');
-  if(authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7);
-  }
-  return null;
-};
-
 blogRouter.post('/', (req, res, next) => {
   void(async () => {
     try {
       const body = req.body;
   
-      const token = getTokenFrom(req);
-  
-      if(token === null) {
+      if(req.token === undefined) {
         res.status(401).json({ error: 'invalid token'});
         return;
       }
@@ -40,7 +30,7 @@ blogRouter.post('/', (req, res, next) => {
        throw new Error('Environment variable SECRET is not given.');
       }
   
-      const decodedTokenNever = jwt.verify(token, SECRET);
+      const decodedTokenNever = jwt.verify(req.token, SECRET);
   
       const decodedToken = decodedTokenNever as UserToken;
   

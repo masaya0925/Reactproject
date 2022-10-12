@@ -6,7 +6,7 @@ import { MONGODB_URI } from './utils/config';
 import { blogRouter } from './controllers/blogs';
 import { userRouter } from './controllers/users';
 import { loginRouter } from './controllers/login';
-import { requestLogger, unknownEndpoint, errorHandler } from './utils/middleware';
+import { requestLogger, unknownEndpoint, errorHandler, tokenExtractor } from './utils/middleware';
 import { info, bError } from './utils/logger';
 
 const app = express();
@@ -27,6 +27,7 @@ mongoose.connect(url)
 
 app.use(cors());
 app.use(express.json());
+app.use(tokenExtractor);
 app.use(requestLogger);
 
 app.use('/api/blogs', blogRouter);
