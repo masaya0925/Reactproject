@@ -82,9 +82,45 @@ blogRouter.put('/:id', (req, res) => {
   })();
 });
 
-blogRouter.delete('/:id', (req, res) => {
+blogRouter.delete('/', (req, res, next) => {
   void(async () => {
-  await Blog.findByIdAndRemove(req.params.id); 
-  res.status(204).end();
+    try {
+
+      const blogId = req.body.blogId;
+
+      const blog = await Blog.findById(blogId);
+
+      if(req.token === undefined) {
+        res.status(401).json({error: 'invalid token'});
+        return;
+      }
+
+      if(SECRET === undefined) {
+        throw new Error('Environment variable SECRET is not given.');
+      }
+
+      const decodedTokenNever = jwt.verify(req.token, SECRET);
+  
+      const decodedToken = decodedTokenNever as UserToken; 
+
+      console.log('id:', decodedToken.id);
+
+      if(!decodedToken.id) {
+        res.status(401).json({error: 'missing or invalid token'});
+        return;
+      }
+
+      if(blog.user.toString() === decodedToken.id.toString()) {
+        await Blog.findByIdAndRemove(blogId);
+        res.status(200).json('Successfully deleted.');
+        return;
+      } else {
+        res.status(400).json({error: 'deleting blog is possible only blog creator.'});
+        return;
+      }
+            
+    } catch (e) {
+      next(e);
+    }
   })();
 });
