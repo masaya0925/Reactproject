@@ -82,13 +82,13 @@ blogRouter.put('/:id', (req, res) => {
   })();
 });
 
-blogRouter.delete('/', (req, res, next) => {
+blogRouter.delete('/:id', (req, res, next) => {
   void(async () => {
     try {
 
-      const blogId = req.body.blogId;
+      const blog = await Blog.findById(req.params.id);
 
-      const blog = await Blog.findById(blogId);
+      console.log('blog: ', blog);
 
       if(req.token === undefined) {
         res.status(401).json({error: 'invalid token'});
@@ -111,7 +111,7 @@ blogRouter.delete('/', (req, res, next) => {
       }
 
       if(blog.user.toString() === decodedToken.id.toString()) {
-        await Blog.findByIdAndRemove(blogId);
+        await Blog.deleteOne({ _id: blog._id });
         res.status(200).json('Successfully deleted.');
         return;
       } else {
