@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export type BlogType = {
   _id: string,
   title: string,
@@ -42,6 +44,14 @@ export type UserToken = {
     username: string,
     id: string
 };
+
+export interface UserDocument extends mongoose.Document{
+    _id: mongoose.Types.ObjectId,
+    username: string,
+    name: string,
+    passwordHash: string,
+    blogs: mongoose.Types.ObjectId[]
+}
 
 export type NewUser = Omit<UserType, 'id'>;
 

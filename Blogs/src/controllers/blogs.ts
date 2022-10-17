@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
-import  jwt  from 'jsonwebtoken';
 import { Blog } from '../models/blog';
-import { User } from '../models/user';
-import { SECRET } from '../utils/config';
-import { UserToken } from '../utils/types';
+import { loginRequire } from '../utils/middleware';
+import { UserDocument } from '../utils/types';
 
 export const blogRouter = express.Router();
 
@@ -16,30 +14,12 @@ blogRouter.get('/', (_req, res) => {
   })();
 });
 
-blogRouter.post('/', (req, res, next) => {
+blogRouter.post('/', loginRequire, (req, res, next) => {
   void(async () => {
     try {
       const body = req.body;
   
-      if(req.token === undefined) {
-        res.status(401).json({ error: 'invalid token'});
-        return;
-      }
-  
-      if(SECRET === undefined) {
-       throw new Error('Environment variable SECRET is not given.');
-      }
-  
-      const decodedTokenNever = jwt.verify(req.token, SECRET);
-  
-      const decodedToken = decodedTokenNever as UserToken;
-  
-      if(!decodedToken.id) {
-        res.status(401).json({error: 'token missing or invalid'});
-        return;
-      }
-  
-      const user = await User.findById(decodedToken.id);
+      const user = req.user as UserDocument;
 
       if(body.title === undefined || body.url === undefined) {
          res.status(400).end();
@@ -53,7 +33,8 @@ blogRouter.post('/', (req, res, next) => {
         });
         const savedBlog = await newBlog.save();
 
-        user.blogs = user.blogs.concat(savedBlog.id);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        user.blogs = user.blogs.concat(savedBlog._id);
         await user.save();
 
         res.status(201).json(savedBlog);
@@ -82,35 +63,14 @@ blogRouter.put('/:id', (req, res) => {
   })();
 });
 
-blogRouter.delete('/:id', (req, res, next) => {
+blogRouter.delete('/:id', loginRequire, (req, res, next) => {
   void(async () => {
     try {
 
+      const user = req.user as UserDocument;
       const blog = await Blog.findById(req.params.id);
 
-      console.log('blog: ', blog);
-
-      if(req.token === undefined) {
-        res.status(401).json({error: 'invalid token'});
-        return;
-      }
-
-      if(SECRET === undefined) {
-        throw new Error('Environment variable SECRET is not given.');
-      }
-
-      const decodedTokenNever = jwt.verify(req.token, SECRET);
-  
-      const decodedToken = decodedTokenNever as UserToken; 
-
-      console.log('id:', decodedToken.id);
-
-      if(!decodedToken.id) {
-        res.status(401).json({error: 'missing or invalid token'});
-        return;
-      }
-
-      if(blog.user.toString() === decodedToken.id.toString()) {
+      if(blog.user.toString() === user.id.toString()) {
         await Blog.deleteOne({ _id: blog._id });
         res.status(200).json('Successfully deleted.');
         return;
