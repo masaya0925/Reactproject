@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
-import { ReturnedObject } from "../utils/types";
+import { ReturnedObject, UserDocument } from "../utils/types";
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -39,5 +39,5 @@ userSchema.set('toJSON', {
 
 userSchema.plugin(uniqueValidator);
 
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.model<UserDocument>('User', userSchema);
 

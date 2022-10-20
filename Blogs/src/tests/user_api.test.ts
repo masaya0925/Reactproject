@@ -3,19 +3,19 @@ import mongoose from 'mongoose';
 import supertest from 'supertest';
 import { app } from '../app';
 import { User } from '../models/user';
-import { usersInDb, initialUsers } from './test_helper.test';
+import { usersInDb, getInitialUser } from './test_helper.test';
 
 const api = supertest(app);
 
 describe('when there is initially one user in db', () => {
     beforeEach(async () => {
         await User.deleteMany({});
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        await User.insertMany(await initialUsers());
+        await User.insertMany(await getInitialUser());
     });
 
     test('creation succeed with a fresh username', async () => {
         const userAtStart = await usersInDb();
+
 
         const newUser = {
             username: 'Mr.MJ',

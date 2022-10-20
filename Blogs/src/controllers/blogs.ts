@@ -71,8 +71,8 @@ blogRouter.delete('/:id', loginRequire, (req, res, next) => {
       const blog = await Blog.findById(req.params.id);
 
       if(blog.user.toString() === user.id.toString()) {
-        await Blog.deleteOne({ _id: blog._id });
-        res.status(200).json('Successfully deleted.');
+        await blog.delete();
+        res.status(204).json('Successfully deleted.');
         return;
       } else {
         res.status(400).json({error: 'deleting blog is possible only blog creator.'});

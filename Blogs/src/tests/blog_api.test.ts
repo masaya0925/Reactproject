@@ -1,34 +1,46 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import mongoose from 'mongoose';
 import supertest from 'supertest';
-import { blogsInDb, initialBlogs } from './test_helper.test';
+import { blogsInDb, initialBlogs, initialUsers, loginUser } from './test_helper.test';
 import { app } from '../app';
 
 const api = supertest(app);
 
 import { Blog } from '../models/blog';
+import { User } from '../models/user';
+
+beforeAll(async () => {
+  await User.deleteMany({});
+  await User.insertMany(await initialUsers);
+});
 
 beforeEach(async () => {
-  await Blog.deleteMany();
+  await Blog.deleteMany({});
   await Blog.insertMany(initialBlogs);
 });
 
-test('blogs are returned as json', async () => {
+
+describe('when there is initially some blogs saved', () => {
+  test('blogs are returned as json', async () => {
+    const user = await loginUser(api, (await initialUsers)[0].username);
+
     await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
-});
+     .get('/api/blogs')
+     .set('Authorization', `Bearer ${user.token}`)
+     .expect(200)
+     .expect('Content-Type', /application\/json/);
+     
+  });
 
-test('unique identifier property', async () => {
+  test('unique identifier property', async () => {
     const response = await api.get('/api/blogs');
-    
-
-    const blog = response.body[0];
-    expect(blog.id).toBeDefined();
+    expect(response.body).toBeDefined();
+  });
 });
 
 test('a valid blog can be added', async () => {
+  const user = await loginUser(api, (await initialUsers)[0].username);
+
   const newBlog = {
     title: 'Third Blog',
     author: 'jon wong',
@@ -38,6 +50,7 @@ test('a valid blog can be added', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${user.token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -51,12 +64,14 @@ test('a valid blog can be added', async () => {
   expect(addBlog).toBeDefined();
   if(addBlog !== undefined){
 
-    expect(addBlog).toEqual({id: addBlog.id, ...newBlog});
+    expect(addBlog).toEqual({id: addBlog.id, ...newBlog, user: addBlog.user});
   }
   
 });
 
 test('likes property is missing from the request',async () => {
+  const user = await loginUser(api, (await initialUsers)[0].username);
+
   const likeLessBlog = {
     title: 'likeLess',
     author: 'Sakura Hayasi',
@@ -65,6 +80,7 @@ test('likes property is missing from the request',async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${user.token}`)
     .send(likeLessBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -85,24 +101,35 @@ test('likes property is missing from the request',async () => {
 
     await api
     .put(`/api/blogs/${findLikeLess.id}`)
+    .set('Authorization', `Bearer ${user.token}`)
     .send(addLikes)
     .expect(204);
 
     const blogs = await blogsInDb();
 
     const addedLikes = blogs.find(blog => blog.title === addLikes.title);
-    expect(addedLikes).toEqual({id: addedLikes.id, ...addLikes});
+    expect(addedLikes).toEqual({id: addedLikes.id, ...addLikes, user: addedLikes.user});
   }
 
 });
 
 test('blog without content is not added',async () => {
+  const user = (await initialUsers)[0];
+
+  const token = (
+    await api
+      .post('/api/login')
+      .send({ ...user, password: 'secret' })
+      .expect(200)
+  ).body.token;
+
   const newBlog = {
     author: 'Taro Yamada',
     likes: 1000
   };
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(400);
 
@@ -111,12 +138,15 @@ test('blog without content is not added',async () => {
 });
 
 test('deleting a single blog post',async () => {
+  const user = await loginUser(api, (await initialUsers)[0].username);
+
   const blogAtStart = await blogsInDb();
 
   const blogToDelete = blogAtStart[0];
-  
+
   await api
    .delete(`/api/blogs/${blogToDelete.id}`)
+   .set('Authorization', `Bearer ${user.token}`)
    .expect(204);
 
   const blogsAtEnd = await blogsInDb();
@@ -131,11 +161,11 @@ test('deleting a single blog post',async () => {
 });
 
 test('updating the information of an individual blog post',async () => {
+  const user = await loginUser(api, (await initialUsers)[0].username);
+
   const blogAtStart = await blogsInDb();
 
   const updateBlog = blogAtStart[0];
-
-  console.log('before:', updateBlog);
 
   const modifyBlog = { 
     likes: 10 
@@ -143,14 +173,11 @@ test('updating the information of an individual blog post',async () => {
 
   await api
    .put(`/api/blogs/${updateBlog.id}`)
+   .set('Authorization', `Bearer ${user.token}`)
    .send(modifyBlog)
    .expect(204);
   
   const blogAtEnd = await blogsInDb();
-
-  const updatedBlog = blogAtEnd[0];
-  
-  console.log('after:', updatedBlog);
   
   expect(blogAtEnd).toContainEqual({...updateBlog, ...modifyBlog});
 
