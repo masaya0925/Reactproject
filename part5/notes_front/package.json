@@ -45,5 +45,6 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "ts-node-dev": "^2.0.0"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }

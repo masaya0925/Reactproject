@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from 'axios';
 import { Note, newNote } from '../utils/types';
-const baseUrl = '/api/notes'
+const baseUrl = '/api/notes';
 
 const getAll = async () => {
   const response = await axios.get<Note[]>(baseUrl);
@@ -13,14 +13,14 @@ const create = async (newObject: newNote) => {
 };
 
 const update = async (id: string, newObject: newNote) => {
-  const response = await axios.put<Note>(`${baseUrl}/${id}`, newObject)
+  const response = await axios.put<Note>(`${baseUrl}/${id}`, newObject);
   return response.data;
-}
+};
 
 const exportObj = {
   getAll,
   create,
   update
-}
+};
 
-export default exportObj
+export default exportObj;

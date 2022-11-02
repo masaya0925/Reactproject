@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 type Props = {
     message: string | null;
@@ -12,7 +12,6 @@ const Notification: React.FC<Props> = ({ message }) => {
     <div className = 'error'>
       {message}
     </div>
-  )
-}
-
-export default Notification
+  );
+};
+export default Notification;
