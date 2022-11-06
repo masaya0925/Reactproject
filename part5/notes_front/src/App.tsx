@@ -15,23 +15,6 @@ const App = () => {
   const [password, setPassword] = useState<string>('');
   const [user, setUser] = useState<UserToken | null>(null);
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
-   void(async() => {
-     event.preventDefault();
-     try {
-       const user = await login({ username, password });
-       setUser(user);
-       setUsername('');
-       setPassword('');
-     } catch (exception) {
-       setErrorMessage('Wrong credentials');
-       setTimeout(() => {
-         setErrorMessage(null);
-       }, 5000);
-     }
-   })();
-  };
-
   useEffect(() => {
     console.log('effect');
     void noteService
@@ -41,6 +24,39 @@ const App = () => {
         setNotes(initialNotes);
       });
   }, []);
+
+  useEffect(() => {
+    const loggedUserJson = window.localStorage.getItem('loggedNoteappUser');
+    if(loggedUserJson) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const user: UserToken = JSON.parse(loggedUserJson);
+      setUser(user);
+      noteService.setToken(user.token);
+    }
+  }, []);
+
+  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    void(async() => {
+      event.preventDefault();
+      try {
+        const user = await login({ username, password });
+ 
+        window.localStorage.setItem(
+         'loggedNoteappUser', JSON.stringify(user)
+        );
+ 
+        noteService.setToken(user.token);
+        setUser(user);
+        setUsername('');
+        setPassword('');
+      } catch (exception) {
+        setErrorMessage('Wrong credentials');
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      }
+    })();
+   };
 
   const addNote = (event: React.FormEvent<HTMLFormElement>) => {
    void(async() => {
