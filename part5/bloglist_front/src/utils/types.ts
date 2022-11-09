@@ -12,3 +12,10 @@ export type UserToken = {
     name: string,
     token: string
 };
+
+export type NewBlog = {
+    title: string,
+    author: string,
+    url: string,
+    likes: string
+};

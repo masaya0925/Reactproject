@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SingleBlog } from './components/Blog';
-import { getAll } from './services/blogs';
+import { getAll, setToken } from './services/blogs';
 import { login } from './services/login';
 import { Blog, UserToken } from './utils/types';
 
@@ -19,11 +19,25 @@ const App = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const loggedBlogJSON = window.localStorage.getItem('loggedBlogappUser');
+    if(loggedBlogJSON) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const user: UserToken = JSON.parse(loggedBlogJSON);
+      setUser(user);
+      setToken(user.token);
+    }
+  }, []);
+
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     void(async() => {
       event.preventDefault();
       try {
-        const user = await login({ username, password});
+        const user = await login({ username, password });
+
+        window.localStorage.setItem(
+          'loggedBlogappUser', JSON.stringify(user)
+        );
 
         setUser(user);
         setUsername('');
@@ -35,6 +49,11 @@ const App = () => {
         }, 5000);
       }
     })(); 
+  };
+
+  const handleLogout = () => {
+   setUser(null);
+   window.localStorage.removeItem('loggedBlogappUser');
   };
 
   const loginForm = () => (
@@ -62,7 +81,9 @@ const App = () => {
         </div> : 
         <div>
           <h2>blogs</h2>
-          <p>{user.name} logged-in</p>
+          <p>{user.name} logged-in 
+          <button type= 'button' onClick={handleLogout}>logout</button>
+          </p>
           {blogs.map(blog => (
             <SingleBlog key = {blog.id} blog = {blog} />
           ))}
