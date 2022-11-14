@@ -62,7 +62,8 @@ const App = () => {
         }, 5000);
       } catch (err) {
         if(axios.isAxiosError(err)){
-           setErrorMessage(JSON.stringify(err.response?.data.error));
+           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+           setErrorMessage(err.response?.data.error);
           setTimeout(() => {
            setErrorMessage('');
           }, 5000);
@@ -118,7 +119,8 @@ const App = () => {
         }, 5000);
       } catch (err) {
         if(axios.isAxiosError(err)){
-          setErrorMessage(JSON.stringify(err.response?.data.error));
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          setErrorMessage(err.response?.data.error);
           setTimeout(() => {
             setErrorMessage('');
           }, 5000);
