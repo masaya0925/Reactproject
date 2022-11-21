@@ -3,8 +3,11 @@ import SingleNote   from './components/Note';
 import noteService from './services/notes';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
+import { LoginForm } from './components/LoginForm';
 import { Note, UserToken } from './utils/types';
 import { login } from './services/login';
+import { Togglable } from './components/Togglable';
+import { NoteForm } from './components/NoteForm';
 
 const App = () => {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -108,28 +111,25 @@ const App = () => {
   const notesToShow = showAll ? notes : notes.filter(note => note.important === true);
 
   const loginForm = () => (
-    <form onSubmit = {handleLogin}>
-      <div>
-        username
-        <input type = 'text' value = {username} name = 'Username'
-          onChange = {({ target }) => setUsername(target.value)}/>
-      </div>
-      <div>
-        password
-        <input type = 'password' value = {password} name = 'Password'
-          onChange = {({ target }) => setPassword(target.value)}/>
-      </div>
-      <button type = 'submit'>login</button>
-    </form>
+    <Togglable buttonLabel='login'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+        handleSubmit={handleLogin}
+      />
+    </Togglable>  
   );
 
   const noteForm = () => (
-    <form onSubmit = {addNote}>
-      <input value = {newNote}
-          onChange = {handleNoteChange}
-      />
-      <button type = "submit">save</button>
-    </form>
+    <Togglable buttonLabel='new note'>
+      <NoteForm
+        onSubmit={addNote}
+        value={newNote}
+        handleChange={handleNoteChange}
+      />  
+    </Togglable>
   );
 
   return (
