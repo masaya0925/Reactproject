@@ -4,18 +4,15 @@ import noteService from './services/notes';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
 import { LoginForm } from './components/LoginForm';
-import { Note, UserToken } from './utils/types';
+import { newNote, Note, UserToken } from './utils/types';
 import { login } from './services/login';
 import { Togglable } from './components/Togglable';
 import { NoteForm } from './components/NoteForm';
 
 const App = () => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [newNote, setNewNote] = useState<string>('');
   const [showAll, setShowAll] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const [user, setUser] = useState<UserToken | null>(null);
 
   useEffect(() => {
@@ -38,9 +35,10 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  type PropsHandleLogin = { username: string, password: string };
+
+  const handleLogin = ({username, password}: PropsHandleLogin) => {
     void(async() => {
-      event.preventDefault();
       try {
         const user = await login({ username, password });
  
@@ -50,8 +48,6 @@ const App = () => {
  
         noteService.setToken(user.token);
         setUser(user);
-        setUsername('');
-        setPassword('');
       } catch (exception) {
         setErrorMessage('Wrong credentials');
         setTimeout(() => {
@@ -61,20 +57,11 @@ const App = () => {
     })();
    };
 
-  const addNote = (event: React.FormEvent<HTMLFormElement>) => {
-   void(async() => {
-     event.preventDefault();
-     const noteObject = {
-       content: newNote,
-       date: new Date().toISOString(),
-       important: Math.random() < 0.5,
-       id: notes.length + 1,
-     };
- 
-     const returnedNote = await noteService.create(noteObject);
-     setNotes(notes.concat(returnedNote));
-     setNewNote('');
-   })();
+  const addNote =  (noteObject: newNote) => {
+    void(async() => {
+      const returnedNote = await noteService.create(noteObject);
+      setNotes(notes.concat(returnedNote));
+    })();
   };
 
   const toggleImportanceOf = (id: string) => {
@@ -103,32 +90,17 @@ const App = () => {
    })();
   };
 
-  const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value);
-  };
-
   const notesToShow = showAll ? notes : notes.filter(note => note.important === true);
 
   const loginForm = () => (
     <Togglable buttonLabel='login'>
-      <LoginForm
-        username={username}
-        password={password}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
-        handleSubmit={handleLogin}
-      />
+      <LoginForm login = {handleLogin}/>
     </Togglable>  
   );
 
   const noteForm = () => (
     <Togglable buttonLabel='new note'>
-      <NoteForm
-        onSubmit={addNote}
-        value={newNote}
-        handleChange={handleNoteChange}
-      />  
+      <NoteForm createNote = {addNote}/>  
     </Togglable>
   );
 
