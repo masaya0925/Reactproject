@@ -1,11 +1,16 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useImperativeHandle } from "react";
 
 type Props = {
   buttonLabel: string,
   children: ReactNode
 };
 
-export const Togglable: React.FC<Props> = (props) => {
+type Handler = {
+  toggleVisibility: () => void
+};
+
+// eslint-disable-next-line react/display-name
+export const Togglable = React.forwardRef<Handler, React.PropsWithChildren<Props>>((props, ref) => {
   const [visible, setVisible] = useState(false);
 
   const hideWhenVisible = { display: visible ? 'none': '' };
@@ -14,6 +19,12 @@ export const Togglable: React.FC<Props> = (props) => {
   const toggleVisibility = () => {
     setVisible(!visible);
   };
+
+  useImperativeHandle(ref, () => {
+    return {
+      toggleVisibility
+    };
+  });
 
   return (
     <div>
@@ -26,4 +37,4 @@ export const Togglable: React.FC<Props> = (props) => {
       </div>
     </div>
   );
-};
+});
