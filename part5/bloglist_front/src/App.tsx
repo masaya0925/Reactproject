@@ -5,7 +5,9 @@ import { Alert } from '@mui/material';
 import { SingleBlog } from './components/Blog';
 import { getAll, setToken, create } from './services/blogs';
 import { login } from './services/login';
-import { Blog, UserToken } from './utils/types';
+import { Blog, NewBlog, UserToken } from './utils/types';
+import { Togglable } from './components/Togglable';
+import { BlogForm } from './components/BlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -13,9 +15,6 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [author, setAuthor] = useState<string>('');
-  const [url, setUrl] = useState<string>('');
   const [user, setUser] = useState<UserToken | null>(null);
 
   useEffect(() => {
@@ -97,23 +96,12 @@ const App = () => {
     </form>
   );
 
-  const addBlog = (event: React.FormEvent<HTMLFormElement>) => {
+  const addBlog = (blogObject: NewBlog) => {
     void(async() => {
-      event.preventDefault();
-      try {
-        const blogObj = {
-          title: title,
-          author: author,
-          url: url,
-          likes: 0
-        };
-    
-        const returnedBlog = await create(blogObj);
+      try {  
+        const returnedBlog = await create(blogObject);
         setBlogs(blogs.concat(returnedBlog));
-        setTitle('');
-        setAuthor('');
-        setUrl('');
-        setSuccessMessage(`A new blog "${blogObj.title}" by ${blogObj.author} added.`);
+        setSuccessMessage(`A new blog "${blogObject.title}" by ${blogObject.author} added.`);
         setTimeout(() => {
           setSuccessMessage('');
         }, 5000);
@@ -130,24 +118,9 @@ const App = () => {
   };
 
   const createBlogForm = () => (
-    <form onSubmit = {addBlog}>
-      <div>
-        title
-        <input type = 'text' value = {title} name = 'Title' 
-          onChange = {({ target }) => setTitle(target.value)}/>
-      </div>
-      <div>
-        author
-        <input type = 'text' value = {author} name = 'Author'
-          onChange = {({ target }) => setAuthor(target.value)}/>
-      </div>
-      <div>
-        url
-        <input type = 'text' value = {url} name = 'Url'
-          onChange = {({ target }) => setUrl(target.value)}/>
-      </div>
-      <button type = 'submit'>create</button>
-    </form>
+    <Togglable buttonLabel='new note'>
+      <BlogForm createBlog = {addBlog}/>
+    </Togglable>
   );
 
   const renderLoginForm = () => (
