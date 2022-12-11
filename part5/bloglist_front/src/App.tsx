@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import  axios  from 'axios';
 import { Alert } from '@mui/material';
 
 import { SingleBlog } from './components/Blog';
-import { getAll, setToken, create } from './services/blogs';
+import { getAll, setToken, create, updateLikes } from './services/blogs';
 import { login } from './services/login';
 import { Blog, NewBlog, UserToken } from './utils/types';
 import { Togglable } from './components/Togglable';
@@ -11,7 +11,7 @@ import { BlogForm } from './components/BlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string | undefined>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -61,8 +61,7 @@ const App = () => {
         }, 5000);
       } catch (err) {
         if(axios.isAxiosError(err)){
-           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-           setErrorMessage(err.response?.data.error);
+           setErrorMessage(err.response?.statusText);
           setTimeout(() => {
            setErrorMessage('');
           }, 5000);
@@ -96,19 +95,21 @@ const App = () => {
     </form>
   );
 
+  const blogFormRef = useRef({} as { toggleVisibility: () => void});
+
   const addBlog = (blogObject: NewBlog) => {
     void(async() => {
       try {  
         const returnedBlog = await create(blogObject);
         setBlogs(blogs.concat(returnedBlog));
+        blogFormRef.current.toggleVisibility();
         setSuccessMessage(`A new blog "${blogObject.title}" by ${blogObject.author} added.`);
         setTimeout(() => {
           setSuccessMessage('');
         }, 5000);
       } catch (err) {
         if(axios.isAxiosError(err)){
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          setErrorMessage(err.response?.data.error);
+          setErrorMessage(err.response?.statusText);
           setTimeout(() => {
             setErrorMessage('');
           }, 5000);
@@ -117,8 +118,29 @@ const App = () => {
     })();
   };
 
+  const likeBlog = (targetBlog: Blog) => {
+    void(async() => {
+      try {
+        await updateLikes(targetBlog);
+        setBlogs(blogs.map(blog => blog.id !== targetBlog.id ? blog: targetBlog));
+        setSuccessMessage(`Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`);
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 5000); 
+        
+      } catch (err) {
+        if(axios.isAxiosError(err)){
+        setErrorMessage(err.response?.statusText);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 5000);
+       }
+      }
+    })();
+  };
+
   const createBlogForm = () => (
-    <Togglable buttonLabel='new note'>
+    <Togglable buttonLabel='new note' ref = {blogFormRef}>
       <BlogForm createBlog = {addBlog}/>
     </Togglable>
   );
@@ -138,8 +160,10 @@ const App = () => {
        </p>
       <h2>create new</h2>
         {createBlogForm()}
-          {blogs.map(blog => (
-            <SingleBlog key = {blog.id} blog = {blog} />
+          {blogs.map( blog => (
+            <SingleBlog key = {blog.id} 
+                       blog = {blog}
+                  pushLikes = {likeBlog} />
         ))}
     </div>
   );

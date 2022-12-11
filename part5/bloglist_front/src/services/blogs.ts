@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Blog, NewBlog } from "../utils/types";
+import { Blog, NewBlog, UpdateLikes } from "../utils/types";
 
 const baseUrl = '/api/blogs';
 
@@ -20,4 +20,9 @@ export const create = async (newObject: NewBlog) => {
     };
     const response = await axios.post<Blog>(baseUrl, newObject, config);
     return response.data;
+};
+
+export const updateLikes = async (blog: Blog) => {
+  const response = await axios.patch<UpdateLikes>(`${baseUrl}/${blog.id}`, {likes: blog.likes});
+  return response.data;
 };

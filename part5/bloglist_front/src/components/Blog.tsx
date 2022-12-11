@@ -3,30 +3,36 @@ import { Card, CardContent} from "@mui/material";
 import { Blog } from "../utils/types";
 
 type Props = {
-    blog: Blog
+    blog: Blog,
+    pushLikes: (blog: Blog) => void
 };
 
-export const SingleBlog: React.FC<Props> = ({ blog }: Props) => {
+export const SingleBlog: React.FC<Props> = ( props: Props) => {
+  const blog = props.blog;
   const [details, setDetails] = useState<boolean>(false);
 
-  const hideWhenDetails = {display: details ? 'none': ''};
   const showWhenDetails = {display: details ? '': 'none'};
 
   const toggleDetails = () => {
     setDetails(!details);
   };
 
+  const pushLikes = (): void => {
+    const toUpdateBlog = ({ 
+      ...blog, 
+      likes: blog.likes + 1
+    });
+    props.pushLikes(toUpdateBlog);
+  };
+
   return (
       <Card variant="outlined">
         <CardContent>
-          <div style = {hideWhenDetails}>
-            <p>{blog.title} {blog.author}<button onClick = {toggleDetails}>view</button></p>
-          </div>
+            <p>{blog.title} {blog.author}<button onClick = {toggleDetails}>{details ? 'hide': 'show'}</button></p>
           <div style = {showWhenDetails}>
-            <p>{blog.title} <button onClick = {toggleDetails}>hide</button></p>
             <p>{blog.url}</p> 
-            <p>{blog.likes} <button>likes</button></p>
-            <p>{blog.author}</p>
+            <p>{blog.likes}<button onClick = {pushLikes}>likes</button></p>
+            <p>{blog.user.name}</p>
           </div>
         </CardContent>
       </Card>

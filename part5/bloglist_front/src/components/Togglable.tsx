@@ -1,11 +1,15 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useImperativeHandle, useState } from "react";
 
 type Props = {
   buttonLabel: string,
   children: ReactNode
 };
 
-export const Togglable: React.FC<Props> = (props) => {
+type Handler = {
+    toggleVisibility: () => void
+};
+
+export const Togglable = React.forwardRef<Handler, React.PropsWithChildren<Props>>((props, ref) => {
   const [visible, setVisible] = useState<boolean>(false);
 
   const showWhenVisible = { display: visible ? '': 'none'};
@@ -14,6 +18,12 @@ export const Togglable: React.FC<Props> = (props) => {
   const toggleVisibility = () => {
     setVisible(!visible);
   };
+
+  useImperativeHandle(ref, () => {
+    return{
+        toggleVisibility
+    };
+  });
 
   return (
     <>
@@ -26,4 +36,6 @@ export const Togglable: React.FC<Props> = (props) => {
      </div>
     </>
   );
-};
+});
+
+Togglable.displayName = 'Togglable';

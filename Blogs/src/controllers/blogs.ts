@@ -45,21 +45,23 @@ blogRouter.post('/', loginRequire, (req, res, next) => {
   })();
 });
 
-blogRouter.put('/:id', (req, res) => {
+blogRouter.patch('/:id', (req, res, next) => {
   void(async () => {
-    const body = req.body;
+    try { 
 
-    const blog = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes,
-      user: body.user
-    };
-
-    const update =  await Blog.findByIdAndUpdate(req.params.id, blog, { new: true });
-    res.status(204).json(update);
-
+      const updateBlog = {
+        likes: req.body.likes
+      };
+    
+      const update =  await Blog.findByIdAndUpdate(
+        req.params.id, 
+        updateBlog, 
+        { new: true }
+      );
+      res.status(204).json(update);
+    } catch (error) {
+      next(error);
+    }
   })();
 });
 
