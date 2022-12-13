@@ -21,6 +21,7 @@ const App = () => {
     void(async() => {
       try {
         const blogs = await getAll();
+        blogs.sort((a, b) => b.likes - a.likes);
         setBlogs(blogs);
       } catch (e) {
         setErrorMessage('Unable to retrieve Blogs');
@@ -101,7 +102,7 @@ const App = () => {
     void(async() => {
       try {  
         const returnedBlog = await create(blogObject);
-        setBlogs(blogs.concat(returnedBlog));
+        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes));
         blogFormRef.current.toggleVisibility();
         setSuccessMessage(`A new blog "${blogObject.title}" by ${blogObject.author} added.`);
         setTimeout(() => {
@@ -122,7 +123,8 @@ const App = () => {
     void(async() => {
       try {
         await updateLikes(targetBlog);
-        setBlogs(blogs.map(blog => blog.id !== targetBlog.id ? blog: targetBlog));
+        setBlogs(blogs.map(blog => blog.id !== targetBlog.id ? blog: targetBlog)
+                      .sort((a, b) => b.likes - a.likes));
         setSuccessMessage(`Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`);
         setTimeout(() => {
           setSuccessMessage('');
