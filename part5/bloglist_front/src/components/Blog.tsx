@@ -1,10 +1,15 @@
 import React, {useState} from "react";
-import { Card, CardContent} from "@mui/material";
+import { Card, CardContent, Button, IconButton } from "@mui/material";
+import DeletedIcon from "@mui/icons-material/Delete";
+import ShowDetail from '@mui/icons-material/KeyboardArrowDownSharp';
+import Close from '@mui/icons-material/CloseSharp';
+import Like from '@mui/icons-material/Favorite';
 import { Blog } from "../utils/types";
 
 type Props = {
     blog: Blog,
-    pushLikes: (blog: Blog) => void
+    pushLikes: (blog: Blog) => void,
+    pushDelete: (blog: Blog) => void
 };
 
 export const SingleBlog: React.FC<Props> = ( props: Props) => {
@@ -25,14 +30,23 @@ export const SingleBlog: React.FC<Props> = ( props: Props) => {
     props.pushLikes(toUpdateBlog);
   };
 
+  const pushDelete = (): void => {
+    if(window.confirm(`Remove blog: ${blog.title} ${blog.author}?`)){
+      props.pushDelete(blog);
+    }
+  };
+
   return (
       <Card variant="outlined">
         <CardContent>
-            <p>{blog.title} {blog.author}<button onClick = {toggleDetails}>{details ? 'hide': 'show'}</button></p>
+            <p>{blog.title} {blog.author}
+            <IconButton color = "info" onClick = {toggleDetails}>{details ? <Close/>: <ShowDetail/>}</IconButton>
+            </p>
           <div style = {showWhenDetails}>
             <p>{blog.url}</p> 
-            <p>{blog.likes}<button onClick = {pushLikes}>likes</button></p>
+            <p>{blog.likes}<IconButton style = {{color: 'pink'}} onClick = {pushLikes}><Like/></IconButton></p>
             <p>{blog.user.name}</p>
+            <Button variant = "outlined" startIcon={<DeletedIcon/>} onClick = {pushDelete}>Delete</Button>
           </div>
         </CardContent>
       </Card>

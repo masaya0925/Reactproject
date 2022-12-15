@@ -26,3 +26,11 @@ export const updateLikes = async (blog: Blog) => {
   const response = await axios.patch<UpdateLikes>(`${baseUrl}/${blog.id}`, {likes: blog.likes});
   return response.data;
 };
+
+export const remove = async (blog: Blog) => {
+  const config = {
+    headers: { Authorization: token }
+  };
+  const response = await axios.delete<null>(`${baseUrl}/${blog.id}`, config);
+  return response.data;
+};

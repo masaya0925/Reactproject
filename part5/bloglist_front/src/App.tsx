@@ -3,7 +3,7 @@ import  axios  from 'axios';
 import { Alert } from '@mui/material';
 
 import { SingleBlog } from './components/Blog';
-import { getAll, setToken, create, updateLikes } from './services/blogs';
+import { getAll, setToken, create, updateLikes, remove } from './services/blogs';
 import { login } from './services/login';
 import { Blog, NewBlog, UserToken } from './utils/types';
 import { Togglable } from './components/Togglable';
@@ -141,6 +141,28 @@ const App = () => {
     })();
   };
 
+  const deleteBlog =  (targetBlog: Blog) => {
+    void(async() =>{
+      try {
+        await remove(targetBlog);
+        setBlogs(blogs.filter(blog => blog.id !== targetBlog.id)
+                      .sort((a, b) => b.likes - a.likes));
+        setSuccessMessage(`"${targetBlog.title}" ${targetBlog.author} is deleted.`);
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 5000);
+      } catch (err) {
+        if(axios.isAxiosError(err)){
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          setErrorMessage(err.response?.data.error);
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 5000);
+        }
+      }
+    })();
+  };
+
   const createBlogForm = () => (
     <Togglable buttonLabel='new note' ref = {blogFormRef}>
       <BlogForm createBlog = {addBlog}/>
@@ -165,7 +187,8 @@ const App = () => {
           {blogs.map( blog => (
             <SingleBlog key = {blog.id} 
                        blog = {blog}
-                  pushLikes = {likeBlog} />
+                  pushLikes = {likeBlog}
+                 pushDelete = {deleteBlog} />
         ))}
     </div>
   );
