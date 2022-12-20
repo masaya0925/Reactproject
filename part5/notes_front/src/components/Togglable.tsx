@@ -9,7 +9,6 @@ type Handler = {
   toggleVisibility: () => void
 };
 
-// eslint-disable-next-line react/display-name
 export const Togglable = React.forwardRef<Handler, React.PropsWithChildren<Props>>((props, ref) => {
   const [visible, setVisible] = useState(false);
 
@@ -38,3 +37,5 @@ export const Togglable = React.forwardRef<Handler, React.PropsWithChildren<Props
     </div>
   );
 });
+
+Togglable.displayName = 'Togglable';
