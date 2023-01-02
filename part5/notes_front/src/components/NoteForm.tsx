@@ -24,7 +24,7 @@ export const NoteForm: React.FC<Props> = ({ createNote }) => {
   };
 
   return (
-    <>
+    <div className = "formDiv">
      <h2>Create a new note</h2>
 
       <form onSubmit = {addNote}>
@@ -33,6 +33,6 @@ export const NoteForm: React.FC<Props> = ({ createNote }) => {
       />
         <button type = "submit">save</button>
       </form>
-    </>
+    </div>
   );
 };
