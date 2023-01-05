@@ -37,12 +37,14 @@ export const SingleBlog: React.FC<Props> = ( props: Props) => {
   };
 
   return (
-      <Card variant="outlined">
+      <Card variant="outlined" className="blog">
         <CardContent>
             <p>{blog.title} {blog.author}
-            <IconButton color = "info" onClick = {toggleDetails}>{details ? <Close/>: <ShowDetail/>}</IconButton>
+            <IconButton id = "detailButton" color = "info"  onClick = {toggleDetails}>
+              {details ? <Close/>: <ShowDetail/>}
+            </IconButton>
             </p>
-          <div style = {showWhenDetails}>
+          <div style = {showWhenDetails} className = 'details'>
             <p>{blog.url}</p> 
             <p>{blog.likes}<IconButton style = {{color: 'pink'}} onClick = {pushLikes}><Like/></IconButton></p>
             <p>{blog.user.name}</p>
