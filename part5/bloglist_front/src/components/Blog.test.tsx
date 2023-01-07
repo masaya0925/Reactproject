@@ -51,3 +51,12 @@ test('Press the button and the details will be displayed', () => {
     const div = component.container.querySelector('.details');
     expect(div).not.toHaveStyle('display: none');
 });
+
+test('When the like button is pressed twice, the event handler is called twice', () => {
+    const button = component.container.querySelector('#likeButton');
+    if(button !== null){
+      fireEvent.click(button);
+      fireEvent.click(button);
+    }
+    expect(mock1.mock.calls).toHaveLength(2);
+});
