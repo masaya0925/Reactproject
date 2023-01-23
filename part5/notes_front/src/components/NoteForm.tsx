@@ -17,7 +17,7 @@ export const NoteForm: React.FC<Props> = ({ createNote }) => {
     createNote({
         content: newNote,
         date: new Date().toISOString(),
-        important: Math.random() < 0.5,
+        important: false,
     });
 
     setNewNote('');
@@ -28,7 +28,8 @@ export const NoteForm: React.FC<Props> = ({ createNote }) => {
      <h2>Create a new note</h2>
 
       <form onSubmit = {addNote}>
-        <input value = {newNote}
+        <input    id = "newNote"
+               value = {newNote}
             onChange = {handleChange}
       />
         <button type = "submit">save</button>
