@@ -27,12 +27,9 @@ describe('Note app', function(){
     cy.contains('Taro Tanaka logged-in');
   });
 
-  describe('when logged in', function(){
+  describe.only('when logged in', function(){
     beforeEach(function(){
-      cy.contains('login').click();
-      cy.get('input#username').type('nobunaga');
-      cy.get('input#password').type('password');
-      cy.get('#login-button').click();
+      cy.login({username: 'nobunaga', password: 'password'});
     });
 
     it('a new note can be created', function(){
@@ -44,9 +41,10 @@ describe('Note app', function(){
 
     describe('and a note exists', function(){
       beforeEach(function(){
-        cy.contains('new note').click();
-        cy.get('input#newNote').type('another note cypress');
-        cy.contains('save').click();
+        cy.createNote({
+          content: 'another note cypress',
+          important: false
+        });
       });
 
       it('it can be made important', function(){
@@ -58,6 +56,20 @@ describe('Note app', function(){
           .contains('make not important');
       });
     });
+  });
+
+  it('login fails with wrong password', function(){
+    cy.contains('login').click();
+    cy.get('input#username').type('nobunaga');
+    cy.get('input#password').type('mogemoge');
+    cy.get('#login-button').click();
+
+    cy.get('.error')
+      .should('contain', 'Wrong credentials')
+      .and('have.css', 'color', 'rgb(255, 0, 0)')
+      .and('have.css', 'border-style', 'solid');
+
+    cy.get('html').should('not.contain', 'Taro Tanaka logged-in');
   });
 });
 
