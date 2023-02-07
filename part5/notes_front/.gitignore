@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 .node-version
+cypress/videos
 
 # testing
 /coverage

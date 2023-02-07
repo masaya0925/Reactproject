@@ -27,7 +27,7 @@ describe('Note app', function(){
     cy.contains('Taro Tanaka logged-in');
   });
 
-  describe.only('when logged in', function(){
+  describe('when logged in', function(){
     beforeEach(function(){
       cy.login({username: 'nobunaga', password: 'password'});
     });
@@ -39,23 +39,21 @@ describe('Note app', function(){
       cy.contains('a note created by cypress');
     });
 
-    describe('and a note exists', function(){
+    describe('and several notes exist', function(){
       beforeEach(function(){
-        cy.createNote({
-          content: 'another note cypress',
-          important: false
-        });
+        cy.createNote({ content: 'first note', important: false });
+        cy.createNote({ content: 'second note', important: false});
+        cy.createNote({ content: 'third note', important: false});
       });
 
-      it('it can be made important', function(){
-        cy.contains('another note cypress')
-          .contains('make important')
-          .click();
+      it('one of those can be made important', function(){
+        cy.contains('second note').parent().find('button').as('theButton');
 
-        cy.contains('another note cypress')
-          .contains('make not important');
+        cy.get('@theButton').click();
+
+        cy.get('@theButton').should('contain', 'make not important');
       });
-    });
+    });  
   });
 
   it('login fails with wrong password', function(){
@@ -70,6 +68,13 @@ describe('Note app', function(){
       .and('have.css', 'border-style', 'solid');
 
     cy.get('html').should('not.contain', 'Taro Tanaka logged-in');
+  });
+
+  it('then example', function(){
+    cy.get('button').then(buttons => {
+      console.log('number of buttons', buttons.length);
+      cy.wrap(buttons[0].click());
+    });
   });
 });
 
