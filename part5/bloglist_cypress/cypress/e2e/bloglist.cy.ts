@@ -27,7 +27,9 @@ describe('BlogList', () => {
       cy.get('#username').type('ADA');
       cy.get('#password').type('osakanaoisii');
       cy.get('#login-button').click();
-      cy.contains('invalid username or password');
+      cy.get('#error-message')
+        .should('contain', 'invalid username or password')
+        .and('have.css', 'background-color', 'rgb(253, 237, 237)');
     });
   });
 });

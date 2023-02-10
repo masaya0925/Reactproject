@@ -196,7 +196,7 @@ const App = () => {
   );
 
   const renderErrorMessage = () => (
-    <Alert severity= 'error'>{errorMessage}</Alert>
+    <Alert id = 'error-message' severity= 'error'>{errorMessage}</Alert>
   );
 
   const renderSuccessMessage = () => (
