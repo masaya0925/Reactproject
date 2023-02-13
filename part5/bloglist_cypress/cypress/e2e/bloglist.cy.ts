@@ -32,6 +32,22 @@ describe('BlogList', () => {
         .and('have.css', 'background-color', 'rgb(253, 237, 237)');
     });
   });
+
+  describe('when logged in', () => {
+    beforeEach(function() {
+      cy.login({username: 'ADA', password: 'password'});
+    });
+
+    it('a blog can be created', function() {
+      cy.contains('new note').click();
+      cy.get('#title').type('a blog created by cypress');
+      cy.get('#author').type('ADA');
+      cy.get('#url').type('http://cypress.test');
+      cy.get('#submit').click();
+      cy.contains('a blog created by cypress');
+    });
+  });
+
 });
 
 export {};
