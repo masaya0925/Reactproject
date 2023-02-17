@@ -61,6 +61,13 @@ describe('BlogList', () => {
         cy.get('@blog').parent().find('#likeButton').click();
         cy.get('@blog').parent().contains('likes: 1');
       });
+
+      it('user who created the blog can delete it', function(){
+        cy.contains('third blog ADA').as('blog');
+        cy.get('@blog').parent().find('#detailButton').click();
+        cy.get('@blog').parent().find('#deleteButton').click();
+        cy.get('html').should('not.contain', 'third blog ADA');
+      });
     });
   });
 

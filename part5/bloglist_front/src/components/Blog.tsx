@@ -48,7 +48,7 @@ export const SingleBlog: React.FC<Props> = ( props: Props) => {
             <p>{blog.url}</p> 
             <p>likes: {blog.likes}<IconButton id = "likeButton" style = {{color: 'pink'}} onClick = {pushLikes}><Like/></IconButton></p>
             <p>{blog.user.name}</p>
-            <Button variant = "outlined" startIcon={<DeletedIcon/>} onClick = {pushDelete}>Delete</Button>
+            <Button id = "deleteButton" variant = "outlined" startIcon={<DeletedIcon/>} onClick = {pushDelete}>Delete</Button>
           </div>
         </CardContent>
       </Card>
