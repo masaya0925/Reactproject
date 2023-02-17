@@ -46,6 +46,22 @@ describe('BlogList', () => {
       cy.get('#submit').click();
       cy.contains('a blog created by cypress');
     });
+
+    describe.only('several blog exist', function() {
+      beforeEach(function() {
+        cy.createBlog({title: 'first blog', author: 'ADA', url: 'http://fire.com', likes: 3});
+        cy.createBlog({title: 'second blog', author: 'ADA', url: 'http://blue.com', likes: 9});
+        cy.createBlog({title: 'third blog', author: 'ADA', url: 'http://yellow.com', likes: 0});
+      });
+
+      it('users can like a blog', function() {
+        cy.contains('third blog ADA').as('blog');
+        cy.get('@blog').parent().find('#detailButton').click();
+        cy.get('@blog').parent().contains('likes: 0');
+        cy.get('@blog').parent().find('#likeButton').click();
+        cy.get('@blog').parent().contains('likes: 1');
+      });
+    });
   });
 
 });

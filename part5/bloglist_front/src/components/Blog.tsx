@@ -46,7 +46,7 @@ export const SingleBlog: React.FC<Props> = ( props: Props) => {
             </p>
           <div style = {showWhenDetails} className = 'details'>
             <p>{blog.url}</p> 
-            <p>{blog.likes}<IconButton id = "likeButton" style = {{color: 'pink'}} onClick = {pushLikes}><Like/></IconButton></p>
+            <p>likes: {blog.likes}<IconButton id = "likeButton" style = {{color: 'pink'}} onClick = {pushLikes}><Like/></IconButton></p>
             <p>{blog.user.name}</p>
             <Button variant = "outlined" startIcon={<DeletedIcon/>} onClick = {pushDelete}>Delete</Button>
           </div>

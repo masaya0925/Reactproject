@@ -3,6 +3,7 @@
    namespace Cypress {
      interface Chainable {
        login(credentials: Credentials): void; 
+       createBlog(newBlog: NewBlog): void;
      }
    }
  }
@@ -19,6 +20,28 @@
         localStorage.setItem('loggedBlogappUser', JSON.stringify(body));
         cy.visit('http://localhost:3000');
     });
+ });
+ 
+ type NewBlog = {
+    title: string,
+    author: string,
+    url: string,
+    likes?: number
+ };
+
+ Cypress.Commands.add('createBlog', (newBlog: NewBlog) => {
+   const userToken = localStorage.getItem('loggedBlogappUser');
+   if(userToken !== null){
+     cy.request({
+       url: 'http://localhost:3003/api/blogs',
+       method: 'POST',
+       body: newBlog,
+       headers: {
+         Authorization: `bearer ${JSON.parse(userToken).token}`
+       }
+     });
+   }
+   cy.visit('http://localhost:3000');
  });
 
  export {};
