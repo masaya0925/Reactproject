@@ -2,9 +2,9 @@ describe('BlogList', () => {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset');
     const user = {
-      username: 'ADA',
-      name: 'Ada Wong',
-      password: 'password'
+        username: 'ADA',
+        name: 'Ada Wong',
+        password: 'password'
     };
     cy.request('POST', 'http://localhost:3003/api/users', user);
     cy.visit('http://localhost:3000');
@@ -67,6 +67,21 @@ describe('BlogList', () => {
         cy.get('@blog').parent().find('#detailButton').click();
         cy.get('@blog').parent().find('#deleteButton').click();
         cy.get('html').should('not.contain', 'third blog ADA');
+      });
+
+      it('ensuring that other users but the creator do not the delete', function(){
+        const user = {
+          username: 'L.E.D',
+          name: 'Kakuta toshiyuki',
+          password: 'password'
+        };
+        cy.request('POST', 'http://localhost:3003/api/users', user);
+        cy.login({username: 'L.E.D', password: 'password'});
+
+        cy.contains('first blog').as('blog');
+        cy.get('@blog').parent().find('#detailButton').click();
+        cy.get('@blog').parent().find('#deleteButton').click();
+        cy.contains('deleting blog is possible only blog creator.');
       });
     });
   });
