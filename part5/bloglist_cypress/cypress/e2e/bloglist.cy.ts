@@ -83,6 +83,14 @@ describe('BlogList', () => {
         cy.get('@blog').parent().find('#deleteButton').click();
         cy.contains('deleting blog is possible only blog creator.');
       });
+
+      it('Blogs are listed in order of most likes', function() {
+        cy.get('.blogCard').then(blog => {
+          cy.wrap(blog[0]).contains('second blog');
+          cy.wrap(blog[1]).contains('first blog');
+          cy.wrap(blog[2]).contains('third blog');
+        });
+      });
     });
   });
 

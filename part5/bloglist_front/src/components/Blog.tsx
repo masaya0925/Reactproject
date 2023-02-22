@@ -37,7 +37,7 @@ export const SingleBlog: React.FC<Props> = ( props: Props) => {
   };
 
   return (
-      <Card variant="outlined" className="blog">
+      <Card variant="outlined" className="blogCard">
         <CardContent>
             <p>{blog.title} {blog.author}
             <IconButton id = "detailButton" color = "info"  onClick = {toggleDetails}>
