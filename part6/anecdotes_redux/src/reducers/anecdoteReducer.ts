@@ -24,6 +24,9 @@ const anecdotesAtStart = [
     console.log('state now: ', state);
     console.log('action', action);
     switch(action.type) {
+      case 'NEW_ANECDOTE':
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return[...state, action.data];
       case 'VOTE':
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const id = action.data.id;
@@ -41,6 +44,17 @@ const anecdotesAtStart = [
       default: 
         return state;
     }
+  };
+
+  export const createAnecdote = (content: string) => {
+    return { 
+      type: 'NEW_ANECDOTE',
+      data: {
+        content,
+        id: getId(),
+        votes: 0
+      }
+    };
   };
 
   export const vote = (id: number) => {
