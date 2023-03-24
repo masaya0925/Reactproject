@@ -26,7 +26,7 @@ const anecdotesAtStart = [
     switch(action.type) {
       case 'NEW_ANECDOTE':
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return[...state, action.data];
+        return[...state.sort((a, b) => b.votes - a.votes), action.data];
       case 'VOTE':
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const id = action.data.id;
@@ -39,7 +39,8 @@ const anecdotesAtStart = [
             votes: voteToAnecdote.votes + 1
         };
         return state.map(anecdote => 
-          anecdote.id !== id ? anecdote : voteAnecdote  
+          anecdote.id !== id ? anecdote : voteAnecdote)
+          .sort((a, b) => b.votes - a.votes
         );
       default: 
         return state;
