@@ -1,7 +1,21 @@
 import { Note } from "../types";
 
+const initialState = [
+  {
+    content: 'reducer defines how redux store works',
+    important: true,
+    id: 1
+  },
+  {
+    content: 'state of store can contain any data',
+    important: false,
+    id: 2
+  }
+];
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const noteReducer = ( state: Note[] = [], action: { type: string, data: any }) => {
+export const noteReducer = ( state: Note[] = initialState, action: { type: string, data: any }) => {
+   console.log('ACTION:', action); 
    switch (action.type) {
      case 'NEW_NOTE': 
        // eslint-disable-next-line @typescript-eslint/no-unsafe-return

@@ -8,6 +8,11 @@ type Props = {
   handleClick: () => void
 };
 
+type RootState = {
+  filter: string
+  notes: Note[]
+};
+
 const SingleNote = ({note , handleClick}: Props) => {
   return (
     <li onClick = {handleClick}>
@@ -19,7 +24,14 @@ const SingleNote = ({note , handleClick}: Props) => {
 
 export const Notes = () => {
   const dispatch = useDispatch();
-  const notes = useSelector(state => state) as Note[];
+  const notes = useSelector(({filter, notes}: RootState) => {
+    if(filter === 'ALL') {
+      return notes;
+    }
+    return filter === 'IMPORTANT'
+      ? notes.filter(note => note.important)
+      : notes.filter(note => !note.important);
+  });
 
   return (
     <ul>
