@@ -8,6 +8,11 @@ type Props = {
   handleClick: () => void
 };
 
+type RootState = {
+  filter: string,
+  anecdotes: anecdote[]
+};
+
 const SingleAnecdote = ({anecdote, handleClick}: Props) => {
   return (
     <>
@@ -21,7 +26,12 @@ const SingleAnecdote = ({anecdote, handleClick}: Props) => {
 
 export const AnecdoteList = () => {
   const dispatch = useDispatch();
-  const anecdotes = useSelector(state => state) as anecdote[];
+
+  const filter = useSelector((state: RootState) => state.filter);
+  const anecdotes = useSelector((state: RootState) => 
+    state.anecdotes.filter(anecdote => 
+      anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+  );  
 
   return (
     <>
