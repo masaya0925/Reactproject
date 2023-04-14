@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const anecdotesAtStart = [
     'If it hurts, do it more often',
     'Adding manpower to a late software project makes it later!',
@@ -19,6 +21,40 @@ const anecdotesAtStart = [
   
   const initialState = anecdotesAtStart.map(asObject);
   
+  const anecdoteSlice = createSlice({
+    name: 'anecdotes',
+    initialState,
+    reducers: {
+      createAnecdote(state, action: {type: string, payload: string}) {
+        state.push({
+          content: action.payload,
+          id: getId(),
+          votes: 0
+        });
+        return state.sort((a, b) => b.votes - a.votes);
+      },
+      vote(state, action: {type: string, payload: number}) {
+        const id = action.payload;
+        const voteToAnecdote = state.find(a => a.id === id);
+        if(voteToAnecdote === undefined) {
+          throw new Error();
+        }
+        const voteAnecdote = {
+          ...voteToAnecdote,
+          votes: voteToAnecdote.votes + 1
+        };
+        return state.map(anecdote => 
+          anecdote.id !== id ? anecdote : voteAnecdote)
+          .sort((a, b) => b.votes - a.votes
+        );
+      }
+    }
+  });
+
+  export const { createAnecdote, vote } = anecdoteSlice.actions;
+  export default anecdoteSlice.reducer;
+
+/*
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export const anecdoteReducer = (state = initialState, action: { type: string, data: any}) => {
     console.log('state now: ', state);
@@ -64,3 +100,4 @@ const anecdotesAtStart = [
         data: { id }
     };
   };
+  */
