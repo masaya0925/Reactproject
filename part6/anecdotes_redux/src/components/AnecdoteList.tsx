@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { vote } from "../reducers/anecdoteReducer";
 import { anecdote } from "../types";
+import { clearNotification, setNotification } from "../reducers/notificationReducer";
 
 type Props = {
   anecdote: anecdote,
@@ -33,6 +34,14 @@ export const AnecdoteList = () => {
       anecdote.content.toLowerCase().includes(filter.toLowerCase()))
   );  
 
+  const clickedVote = (anecdote: anecdote) => {
+    dispatch(vote(anecdote.id));
+    dispatch(setNotification(`you voted ${anecdote.content}`));
+    setTimeout(() => {
+      dispatch(clearNotification());
+    }, 5000);
+  };
+
   return (
     <>
       {anecdotes.map( anecdote => 
@@ -40,8 +49,8 @@ export const AnecdoteList = () => {
           key = {anecdote.id}
           anecdote = {anecdote}
           handleClick = {() => 
-            dispatch(vote(anecdote.id)
-          )}
+            clickedVote(anecdote)
+          }
         />
       )}
     </>
