@@ -11,6 +11,7 @@
     "@types/node": "^16.18.16",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "axios": "^1.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
@@ -24,7 +25,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "server": "json-server -p3001 --watch db.json"
   },
   "eslintConfig": {
     "extends": [
@@ -48,6 +50,7 @@
     "@types/deep-freeze": "^0.1.2",
     "@types/react-redux": "^7.1.25",
     "@types/redux": "^3.6.0",
-    "deep-freeze": "^0.0.1"
+    "deep-freeze": "^0.0.1",
+    "json-server": "^0.17.3"
   }
 }

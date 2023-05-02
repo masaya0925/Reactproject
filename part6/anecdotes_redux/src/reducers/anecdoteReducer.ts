@@ -1,25 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { anecdote } from "../types";
 
-const anecdotesAtStart = [
-    'If it hurts, do it more often',
-    'Adding manpower to a late software project makes it later!',
-    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-    'Premature optimization is the root of all evil.',
-    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
-  ];
-  
   const getId = () => Math.floor(Math.random() * 1000000);
   
-  const asObject = (anecdote: string) => {
-    return {
-      content: anecdote,
-      id: getId(),
-      votes: 0
-    };
-  };
-  
-  const initialState = anecdotesAtStart.map(asObject);
+  const initialState: anecdote[] = [];
   
   const anecdoteSlice = createSlice({
     name: 'anecdotes',
@@ -47,9 +31,12 @@ const anecdotesAtStart = [
           anecdote.id !== id ? anecdote : voteAnecdote)
           .sort((a, b) => b.votes - a.votes
         );
+      },
+      setAnecdotes(_state, action: {type: string, payload: anecdote[]}) {
+        return action.payload;
       }
     }
   });
 
-  export const { createAnecdote, vote } = anecdoteSlice.actions;
+  export const { createAnecdote, vote, setAnecdotes } = anecdoteSlice.actions;
   export default anecdoteSlice.reducer;
