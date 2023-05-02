@@ -8,3 +8,10 @@ export const getAll = async () => {
 
   return response.data;
 };
+
+export const createNew = async (content: string) => {
+  const object = {content, votes: 0};
+  const response = await axios.post<anecdote>(baseUrl, object);
+
+  return response.data;
+};

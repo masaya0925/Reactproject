@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { anecdote } from "../types";
 
-  const getId = () => Math.floor(Math.random() * 1000000);
+  //const getId = () => Math.floor(Math.random() * 1000000);
   
   const initialState: anecdote[] = [];
   
@@ -9,12 +9,8 @@ import { anecdote } from "../types";
     name: 'anecdotes',
     initialState,
     reducers: {
-      createAnecdote(state, action: {type: string, payload: string}) {
-        state.push({
-          content: action.payload,
-          id: getId(),
-          votes: 0
-        });
+      createAnecdote(state, action: {type: string, payload: anecdote}) {
+        state.push(action.payload);
         return state.sort((a, b) => b.votes - a.votes);
       },
       vote(state, action: {type: string, payload: number}) {
