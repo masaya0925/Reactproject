@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { NewNote } from './components/newNote';
 import { Notes } from './components/Notes';
 import { VisibilityFilter } from './components/VisibilityFilter';
-import { getAll } from './services/notes';
-import { setNotes } from './reducers/noteReducer';
+import { initializeNotes } from './reducers/noteReducer';
 import { useDispatch } from 'react-redux';
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { Note } from './types';
 
 const App = () => {
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<Note[], unknown, AnyAction> = useDispatch();
 
   useEffect(() => {
-    void getAll().then(notes => 
-      dispatch(setNotes(notes)));
+   void dispatch(initializeNotes());
   }, []);
 
   return (
