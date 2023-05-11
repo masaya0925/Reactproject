@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { AnyAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 import { anecdote } from "../types";
+import { getAll } from "../services/anecdote";
 
   //const getId = () => Math.floor(Math.random() * 1000000);
   
@@ -35,4 +36,12 @@ import { anecdote } from "../types";
   });
 
   export const { createAnecdote, vote, setAnecdotes } = anecdoteSlice.actions;
+
+  export const initializeAnecdotes = (): ThunkAction<Promise<void>, anecdote[], unknown, AnyAction> => {
+    return async (dispatch) => {
+      const anecdotes = await getAll();
+      dispatch(setAnecdotes(anecdotes));
+    };
+  };
+
   export default anecdoteSlice.reducer;
