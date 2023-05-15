@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { voteAnecdote } from "../reducers/anecdoteReducer";
 import { anecdote } from "../types";
-import { clearNotification, setNotification } from "../reducers/notificationReducer";
+import { setNotifications } from "../reducers/notificationReducer";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 
 type Props = {
@@ -27,7 +27,8 @@ const SingleAnecdote = ({anecdote, handleClick}: Props) => {
 };
 
 export const AnecdoteList = () => {
-  const dispatch: ThunkDispatch<anecdote[], unknown, AnyAction> = useDispatch();
+  const dispatch1: ThunkDispatch<anecdote[], unknown, AnyAction> = useDispatch();
+  const dispatch2: ThunkDispatch<string, unknown, AnyAction> = useDispatch();
 
   const filter = useSelector((state: RootState) => state.filter);
   const anecdotes = useSelector((state: RootState) => 
@@ -36,11 +37,8 @@ export const AnecdoteList = () => {
   );  
 
   const clickedVote = (anecdote: anecdote) => {
-    void dispatch(voteAnecdote(anecdote));
-    dispatch(setNotification(`you voted ${anecdote.content}`));
-    setTimeout(() => {
-      dispatch(clearNotification());
-    }, 5000);
+    void dispatch1(voteAnecdote(anecdote));
+    dispatch2(setNotifications(`you voted ${anecdote.content}`, 5));
   };
 
   return (
