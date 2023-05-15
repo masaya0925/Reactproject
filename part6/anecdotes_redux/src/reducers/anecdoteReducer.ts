@@ -1,6 +1,6 @@
 import { AnyAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 import { anecdote } from "../types";
-import { getAll } from "../services/anecdote";
+import { createNew, getAll, voteUpdate } from "../services/anecdote";
 
   //const getId = () => Math.floor(Math.random() * 1000000);
   
@@ -10,37 +10,44 @@ import { getAll } from "../services/anecdote";
     name: 'anecdotes',
     initialState,
     reducers: {
-      createAnecdote(state, action: {type: string, payload: anecdote}) {
-        state.push(action.payload);
-        return state.sort((a, b) => b.votes - a.votes);
-      },
-      vote(state, action: {type: string, payload: number}) {
-        const id = action.payload;
-        const voteToAnecdote = state.find(a => a.id === id);
-        if(voteToAnecdote === undefined) {
-          throw new Error();
-        }
-        const voteAnecdote = {
-          ...voteToAnecdote,
-          votes: voteToAnecdote.votes + 1
-        };
-        return state.map(anecdote => 
-          anecdote.id !== id ? anecdote : voteAnecdote)
-          .sort((a, b) => b.votes - a.votes
-        );
+      vote(state, action: {type: string, payload: anecdote}) {
+        const voted: anecdote = action.payload;
+        const newState = state.map(anecdote => anecdote.id !== voted.id ? anecdote : voted);
+        return newState.sort((a, b) => b.votes - a.votes);
       },
       setAnecdotes(_state, action: {type: string, payload: anecdote[]}) {
         return action.payload;
+      },
+      appendAnecdote(state, action: {type: string, payload: anecdote}) {
+        state.push(action.payload);
       }
     }
   });
 
-  export const { createAnecdote, vote, setAnecdotes } = anecdoteSlice.actions;
+  export const { vote, setAnecdotes, appendAnecdote } = anecdoteSlice.actions;
 
   export const initializeAnecdotes = (): ThunkAction<Promise<void>, anecdote[], unknown, AnyAction> => {
     return async (dispatch) => {
       const anecdotes = await getAll();
       dispatch(setAnecdotes(anecdotes));
+    };
+  };
+
+  export const createAnecdote = (content: string): ThunkAction<Promise<void>, anecdote[], unknown, AnyAction> => {
+    return async (dispatch) => {
+      const newAnecdote = await createNew(content);
+      dispatch(appendAnecdote(newAnecdote));
+    };
+  };
+
+  export const voteAnecdote = (anecdote: anecdote): ThunkAction<Promise<void>, anecdote[], unknown, AnyAction> => {
+    return async (dispatch) => {
+      const voteAnecdote = {
+        ...anecdote,
+        votes: anecdote.votes + 1
+      };
+      const voteToAnecdote = await voteUpdate(voteAnecdote);
+      dispatch(vote(voteToAnecdote));
     };
   };
 

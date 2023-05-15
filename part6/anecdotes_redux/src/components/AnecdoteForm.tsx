@@ -2,24 +2,22 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "../reducers/anecdoteReducer";
 import { clearNotification, setNotification } from "../reducers/notificationReducer";
-import { createNew } from "../services/anecdote";
+import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { anecdote } from "../types";
 
 export const AnecdoteForm = () => {
-  const dispatch = useDispatch();
+  const dispatch: ThunkDispatch<anecdote[], unknown, AnyAction> = useDispatch();
 
   const addAnecdote = (event: React.FormEvent<HTMLFormElement>) => {
-    void(async() => {
-      event.preventDefault();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const content: string = event.currentTarget.anecdote.value;
-      event.currentTarget.anecdote.value = '';
-      const newAnecdote = await createNew(content);
-      dispatch(createAnecdote(newAnecdote));
-      dispatch(setNotification(`created: ${content}`));
-      setTimeout(() => {
-        dispatch(clearNotification());
-      }, 5000);
-    })();
+    event.preventDefault();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const content: string = event.currentTarget.anecdote.value;
+    event.currentTarget.anecdote.value = '';
+    void dispatch(createAnecdote(content));
+    dispatch(setNotification(`created: ${content}`));
+     setTimeout(() => {
+      dispatch(clearNotification());
+    }, 5000);
   };
   
   return (

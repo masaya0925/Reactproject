@@ -15,3 +15,11 @@ export const createNew = async (content: string) => {
 
   return response.data;
 };
+
+export const voteUpdate = async (anecdote: anecdote) => {
+  const response = await axios.patch<anecdote>(
+    `${baseUrl}/${anecdote.id}`, {votes: anecdote.votes}
+  );
+
+  return response.data;
+};
