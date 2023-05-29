@@ -1,20 +1,34 @@
 import React from 'react';
-import { UseQueryResult, useQuery } from 'react-query';
-import { getNotes } from './request';
+import { UseQueryResult, useQuery, useMutation, useQueryClient } from 'react-query';
+import { getNotes, createNote, updateNote } from './request';
 
 import { Note } from './types';
 
 const App = () => {
+  const queryClient = useQueryClient();
+
+  const newNoteMutation = useMutation(createNote, {
+    onSuccess: () => {
+      void queryClient.invalidateQueries('notes');
+    }
+  });
+
   const addNote = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const content = event.currentTarget.note.value;
+    const content: string = event.currentTarget.note.value;
     event.currentTarget.note.value = '';
-    console.log(content);
+    newNoteMutation.mutate({ content, important: true });
   };
 
+  const updateNoteMutation = useMutation(updateNote, {
+    onSuccess: () => {
+      void queryClient.invalidateQueries('notes');
+    }
+  });
+
   const toggleImportance = (note: Note) => {
-    console.log('toggle importance of', note.id);
+    updateNoteMutation.mutate({ ...note, important: !note.important });
   };
 
   const result: UseQueryResult<Note[]> = useQuery('notes', getNotes);

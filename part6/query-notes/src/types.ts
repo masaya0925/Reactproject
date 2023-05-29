@@ -3,3 +3,8 @@ export type Note = {
   content: string;
   important: boolean;
 };
+
+export type NewNote = {
+  content: string;
+  important: boolean;
+};
