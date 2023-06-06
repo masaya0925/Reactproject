@@ -3,3 +3,8 @@ export type Anecdote = {
   content: string;
   votes: number;
 };
+
+export type NewAnecdote = {
+  content: string;
+  votes: number;
+};

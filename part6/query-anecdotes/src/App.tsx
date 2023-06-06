@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Toaster } from 'react-hot-toast';
 import { AnecdoteForm } from './components/AnecdoteForm';
 import { Notification } from './components/Notification';
 import { Anecdote } from './types';
@@ -34,6 +35,7 @@ const App = () => {
 
   return (
     <>
+     <Toaster />
      <h3>Anecdote app</h3>
 
      <Notification />
