@@ -14,3 +14,14 @@ export const createAnecdote = async (newAnecdote: NewAnecdote) => {
 
   return response.data;
 };
+
+export const updateAnecdote = async (updatedAnecdote: Anecdote) => {
+  const response = await axios.patch<Anecdote>(
+    `${baseUrl}/${updatedAnecdote.id}`,
+    {
+      votes: updatedAnecdote.votes,
+    }
+  );
+
+  return response.data;
+};
