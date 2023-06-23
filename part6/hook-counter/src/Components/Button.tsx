@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { CounterContext } from "../CounterContext";
+import React from "react";
+import { useCounterDispatch } from "../CounterContext";
 
 type ButtonProps = {
     type: string,
@@ -7,7 +7,7 @@ type ButtonProps = {
   };
   
 export const Button = ({ type, label }: ButtonProps) => {
-  const { dispatch } = useContext(CounterContext);
+  const  dispatch  = useCounterDispatch();
     return (
       <button onClick = {() => dispatch({ type })}>
         {label}
