@@ -3,6 +3,7 @@ import React from "react";
 import { useQueryClient, useMutation, useQuery, UseQueryResult } from "react-query";
 import { getAnecdotes, updateAnecdote } from "../request";
 import { Anecdote } from "../types";
+import { useNotification } from "../NotificationContext";
 
 type Props = {
     anecdote: Anecdote,
@@ -11,6 +12,8 @@ type Props = {
 
 export const AnecdoteList = () => {
   const queryClient = useQueryClient();
+
+  const { dispatch } = useNotification();
 
   const updateAnecdoteMutation = useMutation(updateAnecdote, {
     onSuccess: (updatedAnecdote) => {
@@ -27,6 +30,7 @@ export const AnecdoteList = () => {
 
   const vote = (anecdote: Anecdote) => {
     updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1});
+    dispatch({ type: 'create', payload: `anecdote ${anecdote.content} voted`});
   };
 
   const SingleAnecdote = ({anecdote, handleClick}: Props) => {

@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { Toaster } from 'react-hot-toast';
+import { Notification } from './components/Notification';
 import { AnecdoteForm } from './components/AnecdoteForm';
 import { AnecdoteList } from './components/AnecdoteList';
 
 const App = () => {
   return (
     <>
-     <Toaster />
      <h3>Anecdote app</h3>
+     <Notification />
      <AnecdoteForm />
      <AnecdoteList />
     </>
