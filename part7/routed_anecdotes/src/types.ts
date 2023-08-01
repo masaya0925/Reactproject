@@ -1,4 +1,4 @@
-export type PropsAnecdote = {
+export type AnecdoteType = {
   id: number;
   content: string;
   author: string;
@@ -6,4 +6,8 @@ export type PropsAnecdote = {
   votes: number;
 };
 
-export type PropsNewAnecdote = Omit<PropsAnecdote, 'id'>;
+export type PropsAnecdote = {
+  anecdote: AnecdoteType | null | undefined;
+};
+
+export type PropsNewAnecdote = Omit<AnecdoteType, 'id'>;

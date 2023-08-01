@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { PropsAnecdote, PropsNewAnecdote } from './types';
+import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom';
+import { AnecdoteType, PropsNewAnecdote, PropsAnecdote } from './types';
 
 
 type PropsAnecdotes = {
-  anecdotes: PropsAnecdote[];
+  anecdotes: AnecdoteType[];
 };
 
 const Menu = () =>  {
@@ -21,11 +21,28 @@ const Menu = () =>  {
   );
 };
 
+const Anecdote = ({ anecdote }: PropsAnecdote) => {
+  if(anecdote === null || anecdote === undefined) return <div />;
+  return (
+    <>
+     <h1>{anecdote.content}</h1>
+
+     <p>has {anecdote.votes} vote</p>
+
+     <p>for more info see<a href = {anecdote.info}>{anecdote.info}</a></p>
+    </>
+  );
+};
+
 const AnecdoteList = ({ anecdotes }: PropsAnecdotes) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(a => <li key = {a.id} >{a.content}</li>)}
+      {anecdotes.map(a => (
+       <li key = {a.id}>
+        <Link to = {`/anecdotes/${a.id}`}>{a.content}</Link>
+       </li>
+      ))}
     </ul>
   </div>
 );
@@ -52,6 +69,16 @@ const Footer = () => (
   </div>
 );
 
+type NotificationProps = {
+  notification: string;
+};
+
+const Notification = ({ notification }: NotificationProps) => {
+  if(notification === '') return <div />;
+
+  return <div>{notification}</div>;
+};
+
 type PropsCreateNew = {
   addNew: (anecdote: PropsNewAnecdote) => void;
 };
@@ -61,6 +88,8 @@ const CreateNew = ({ addNew }: PropsCreateNew) => {
   const [author, setAuthor] = useState('');
   const [info, setInfo] = useState('');
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     addNew({
@@ -69,6 +98,7 @@ const CreateNew = ({ addNew }: PropsCreateNew) => {
       info,
       votes: 0
     });
+    navigate('/');
   };
 
   return (
@@ -111,7 +141,6 @@ const App = () => {
     }
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [notification, setNotification] = useState('');
 
   const addNew = (anecdote: PropsNewAnecdote) => {
@@ -121,10 +150,14 @@ const App = () => {
     };
     
     setAnecdotes(anecdotes.concat(newAnecdote));
+    setNotification(`a new anecdote ${anecdote.content} created!`);
+    setTimeout(() => {
+      setNotification('');
+    }, 5000);
   };
 
   const anecdoteById = (id: number) => 
-     anecdotes.find(a => a.id === id);
+    anecdotes.find(a => a.id === id);
   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const vote = (id: number) => {
@@ -140,19 +173,24 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a));
   };
 
+  const match = useMatch('/anecdotes/:id');
+  const anecdote = match
+    ? anecdotes.find(a => a.id === Number(match.params.id))
+    : null;
+
   return (
-    <Router>
      <div>
        <h1>Software Anecdote</h1>
        <Menu />
-       <Routes>
-         <Route path = '/' element = {<AnecdoteList anecdotes={anecdotes}/>} />
+       <Notification notification = {notification} />
+       <Routes>     
+         <Route path = '/anecdotes/:id' element = {<Anecdote anecdote = {anecdote}/>} />
          <Route path = '/create' element = {<CreateNew addNew = {addNew}/>} />
          <Route path = '/about'  element = {<About />} />
+         <Route path = '/' element = {<AnecdoteList anecdotes={anecdotes}/>} />
        </Routes>
        <Footer />
      </div>
-    </Router>
   );
 };
 
