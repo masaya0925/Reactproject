@@ -86,9 +86,9 @@ type PropsCreateNew = {
 };
 
 const CreateNew = ({ addNew }: PropsCreateNew) => {
-  const content = useField('content');
-  const author = useField('author');
-  const info = useField('info');
+  const [content, contentReset] = useField('content');
+  const [author, authorReset] = useField('author');
+  const [info, infoReset] = useField('info');
 
   const navigate = useNavigate();
 
@@ -102,6 +102,13 @@ const CreateNew = ({ addNew }: PropsCreateNew) => {
     });
     navigate('/');
   };
+
+  const handleReset = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    contentReset();
+    authorReset();
+    infoReset();
+  }
 
   return (
     <div>
@@ -120,6 +127,7 @@ const CreateNew = ({ addNew }: PropsCreateNew) => {
           <input {...info} />
         </div>
         <button type = 'submit'>create</button>
+        <button type = 'button' onClick={handleReset}>reset</button>
       </form>
     </div>
   );
