@@ -1,0 +1,42 @@
+{
+  "notes": [
+    {
+      "content": "custom-hooks are awesome",
+      "id": 1
+    },
+    {
+      "content": "the best feature ever <3",
+      "id": 2
+    },
+    {
+      "content": "my note is insane",
+      "id": 3
+    },
+    {
+      "content": "eeeeeeee",
+      "id": 4
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "kaltsoon",
+      "number": "045-2323456",
+      "id": 2
+    },
+    {
+      "name": "taro",
+      "number": "093-9384-939493",
+      "id": 3
+    },
+    {
+      "name": "tetetette",
+      "number": "9023876420938",
+      "id": 4
+    }
+  ]
+}

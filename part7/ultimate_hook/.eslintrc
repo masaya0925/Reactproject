@@ -1,0 +1,56 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "airbnb",
+        "airbnb-typescript",
+        "prettier"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react", "@typescript-eslint"
+    ],
+    "rules": {
+        "import/prefer-default-export": "off",
+        "import/extensions": [
+           "error",
+           {
+            "js": "never",
+            "jsx": "never",
+            "ts": "never",
+            "tsx": "never"
+           }
+        ],
+        "react/function-component-definition": [
+            2,
+            {
+              "namedComponents": "arrow-function",
+              "unnamedComponents": "arrow-function"
+            }
+        ],
+        "react/jsx-filename-extension": [
+            "error",
+            {
+              "extensions": ["jsx", "tsx"]
+            }
+        ]
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "paths": ["src"],
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        }
+    }
+}
