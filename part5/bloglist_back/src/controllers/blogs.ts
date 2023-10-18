@@ -1,35 +1,45 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import express from 'express';
-import { Blog } from '../models/blog';
-import { loginRequire } from '../utils/middleware';
-import { UserDocument } from '../utils/types';
+import express from "express";
+import { Blog } from "../models/blog";
+import { loginRequire } from "../utils/middleware";
+import { UserDocument } from "../utils/types";
 
 export const blogRouter = express.Router();
 
-blogRouter.get('/', (_req, res) => {
-  void(async () => {
-    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1});
+blogRouter.get("/", (_req, res) => {
+  void (async () => {
+    const blogs = await Blog.find({}).populate("user", {
+      username: 1,
+      name: 1,
+    });
     res.json(blogs);
   })();
 });
 
-blogRouter.post('/', loginRequire, (req, res, next) => {
-  void(async () => {
+blogRouter.get("/:id", (req, res) => {
+  void (async () => {
+    const blog = await Blog.findById(req.params.id);
+    res.json(blog);
+  })();
+});
+
+blogRouter.post("/", loginRequire, (req, res, next) => {
+  void (async () => {
     try {
       const body = req.body;
-  
+
       const user = req.user as UserDocument;
 
-      if(body.title === undefined || body.url === undefined) {
-         res.status(400).end();
+      if (body.title === undefined || body.url === undefined) {
+        res.status(400).end();
       } else {
         const newBlog = new Blog({
           title: body.title,
           author: body.author,
           url: body.url,
-          likes:body.likes,
-          user: user._id
+          likes: body.likes,
+          user: user._id,
         });
         const savedBlog = await newBlog.save();
 
@@ -37,16 +47,24 @@ blogRouter.post('/', loginRequire, (req, res, next) => {
         user.blogs = user.blogs.concat(savedBlog._id);
         await user.save();
 
-        res.status(201).json(savedBlog);
+        const populatedBlog = await Blog.findById(savedBlog._id).populate(
+          "user",
+          {
+            username: 1,
+            name: 1,
+          }
+        );
+
+        res.status(201).json(populatedBlog);
       }
     } catch (e) {
       next(e);
-    }  
+    }
   })();
 });
 
-blogRouter.put('/:id', (req, res) => {
-  void(async () => {
+blogRouter.patch("/:id", (req, res) => {
+  void (async () => {
     const body = req.body;
 
     const blog = {
@@ -54,31 +72,32 @@ blogRouter.put('/:id', (req, res) => {
       author: body.author,
       url: body.url,
       likes: body.likes,
-      user: body.user
+      user: body.user,
     };
 
-    const update =  await Blog.findByIdAndUpdate(req.params.id, blog, { new: true });
+    const update = await Blog.findByIdAndUpdate(req.params.id, blog, {
+      new: true,
+    });
     res.status(204).json(update);
-
   })();
 });
 
-blogRouter.delete('/:id', loginRequire, (req, res, next) => {
-  void(async () => {
+blogRouter.delete("/:id", loginRequire, (req, res, next) => {
+  void (async () => {
     try {
-
       const user = req.user as UserDocument;
       const blog = await Blog.findById(req.params.id);
 
-      if(blog.user.toString() === user.id.toString()) {
+      if (blog.user.toString() === user.id.toString()) {
         await blog.delete();
-        res.status(204).json('Successfully deleted.');
+        res.status(204).json("Successfully deleted.");
         return;
       } else {
-        res.status(400).json({error: 'deleting blog is possible only blog creator.'});
+        res
+          .status(400)
+          .json({ error: "deleting blog is possible only blog creator." });
         return;
       }
-            
     } catch (e) {
       next(e);
     }

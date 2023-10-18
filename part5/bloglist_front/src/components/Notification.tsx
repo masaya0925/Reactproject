@@ -2,13 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { Alert } from "@mui/material";
-
-export type RootState = {
-  notification: {
-    severity: "success" | "error";
-    message: string;
-  };
-};
+import { RootState } from "../utils/types";
 
 export const Notification = () => {
   const { severity, message } = useSelector(

@@ -4,8 +4,7 @@ import {
   createSlice,
   PayloadAction,
 } from "@reduxjs/toolkit";
-
-import { RootState } from "../components/Notification";
+import { RootState } from "../utils/types";
 
 type NotificationType = {
   severity: string;

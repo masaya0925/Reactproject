@@ -1,45 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import { SingleBlog } from "./components/Blog";
-import {
-  getAll,
-  setToken,
-  create,
-  updateLikes,
-  remove,
-} from "./services/blogs";
+import { setToken, updateLikes, remove } from "./services/blogs";
 import { login } from "./services/login";
-import { Blog, NewBlog, UserToken } from "./utils/types";
+import { Blog, NewBlog, RootState, UserToken } from "./utils/types";
 import { Togglable } from "./components/Togglable";
 import { BlogForm } from "./components/BlogForm";
 import { setNotifications } from "./reducers/notificationReducer";
-import { Notification, RootState } from "./components/Notification";
+import { createBlog, getBlogs } from "./reducers/blogReducers";
+import { Notification } from "./components/Notification";
 import { useDispatch } from "react-redux";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
 
 const App = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [user, setUser] = useState<UserToken | null>(null);
-
   const dispatch: ThunkDispatch<RootState, unknown, AnyAction> = useDispatch();
+  const dispatchBlogs: ThunkDispatch<Blog[], unknown, AnyAction> =
+    useDispatch();
+
+  const storeBlog = useSelector((state: RootState) => state.blogs);
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const blogs = await getAll();
-        blogs.sort((a, b) => b.likes - a.likes);
-        setBlogs(blogs);
-      } catch (e) {
-        dispatch(
-          setNotifications({
-            severity: "error",
-            message: "Unable to retrieve Blogs",
-          })
-        );
-      }
-    })();
+    try {
+      void dispatchBlogs(getBlogs());
+    } catch (e) {
+      dispatch(
+        setNotifications({
+          severity: "error",
+          message: "Unable to retrieve Blogs",
+        })
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -116,25 +111,21 @@ const App = () => {
   const blogFormRef = useRef({} as { toggleVisibility: () => void });
 
   const addBlog = (blogObject: NewBlog) => {
-    void (async () => {
-      try {
-        const returnedBlog = await create(blogObject);
-        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes));
-        blogFormRef.current.toggleVisibility();
-        dispatch(
-          setNotifications({
-            severity: "success",
-            message: `A new blog "${blogObject.title}" by ${blogObject.author} added.`,
-          })
-        );
-        console.log();
-      } catch (err) {
-        console.log(err);
-        dispatch(
-          setNotifications({ severity: "error", message: "Failed added Blog" })
-        );
-      }
-    })();
+    try {
+      void dispatchBlogs(createBlog(blogObject));
+      blogFormRef.current.toggleVisibility();
+      dispatch(
+        setNotifications({
+          severity: "success",
+          message: `A new blog "${blogObject.title}" by ${blogObject.author} added.`,
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      dispatch(
+        setNotifications({ severity: "error", message: "Failed added Blog" })
+      );
+    }
   };
 
   const likeBlog = (targetBlog: Blog) => {
@@ -211,7 +202,7 @@ const App = () => {
       </p>
       <h2>create new</h2>
       {createBlogForm()}
-      {blogs.map((blog) => (
+      {storeBlog.map((blog) => (
         <SingleBlog
           key={blog.id}
           blog={blog}
