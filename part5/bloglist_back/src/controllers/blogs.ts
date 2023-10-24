@@ -78,7 +78,7 @@ blogRouter.patch("/:id", (req, res) => {
     const update = await Blog.findByIdAndUpdate(req.params.id, blog, {
       new: true,
     });
-    res.status(204).json(update);
+    res.status(200).json(update);
   })();
 });
 

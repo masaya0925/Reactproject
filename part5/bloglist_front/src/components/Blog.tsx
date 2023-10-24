@@ -25,7 +25,6 @@ export const SingleBlog: React.FC<Props> = (props: Props) => {
   const pushLikes = (): void => {
     const toUpdateBlog = {
       ...blog,
-      likes: blog.likes + 1,
     };
     props.pushLikes(toUpdateBlog);
   };

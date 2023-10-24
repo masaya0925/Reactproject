@@ -1,20 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import { SingleBlog } from "./components/Blog";
-import { setToken, updateLikes, remove } from "./services/blogs";
+import { setToken } from "./services/blogs";
 import { login } from "./services/login";
 import { Blog, NewBlog, RootState, UserToken } from "./utils/types";
 import { Togglable } from "./components/Togglable";
 import { BlogForm } from "./components/BlogForm";
 import { setNotifications } from "./reducers/notificationReducer";
-import { createBlog, getBlogs } from "./reducers/blogReducers";
+import {
+  createBlog,
+  getBlogs,
+  likedBlog,
+  removeBlog,
+} from "./reducers/blogReducers";
 import { Notification } from "./components/Notification";
 import { useDispatch } from "react-redux";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 
 const App = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [user, setUser] = useState<UserToken | null>(null);
@@ -111,71 +115,29 @@ const App = () => {
   const blogFormRef = useRef({} as { toggleVisibility: () => void });
 
   const addBlog = (blogObject: NewBlog) => {
+    void dispatchBlogs(createBlog(blogObject, dispatch));
+    blogFormRef.current.toggleVisibility();
+  };
+
+  const likeBlog = (targetBlog: Blog) => {
     try {
-      void dispatchBlogs(createBlog(blogObject));
-      blogFormRef.current.toggleVisibility();
+      void dispatchBlogs(likedBlog(targetBlog, dispatch));
       dispatch(
         setNotifications({
           severity: "success",
-          message: `A new blog "${blogObject.title}" by ${blogObject.author} added.`,
+          message: `Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`,
         })
       );
     } catch (err) {
       console.log(err);
       dispatch(
-        setNotifications({ severity: "error", message: "Failed added Blog" })
+        setNotifications({ severity: "error", message: "Failed Liked Blog" })
       );
     }
   };
 
-  const likeBlog = (targetBlog: Blog) => {
-    void (async () => {
-      try {
-        await updateLikes(targetBlog);
-        setBlogs(
-          blogs
-            .map((blog) => (blog.id !== targetBlog.id ? blog : targetBlog))
-            .sort((a, b) => b.likes - a.likes)
-        );
-        dispatch(
-          setNotifications({
-            severity: "success",
-            message: `Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`,
-          })
-        );
-      } catch (err) {
-        console.log(err);
-        dispatch(
-          setNotifications({ severity: "error", message: "Failed Liked Blog" })
-        );
-      }
-    })();
-  };
-
   const deleteBlog = (targetBlog: Blog) => {
-    void (async () => {
-      try {
-        await remove(targetBlog);
-        setBlogs(
-          blogs
-            .filter((blog) => blog.id !== targetBlog.id)
-            .sort((a, b) => b.likes - a.likes)
-        );
-        dispatch(
-          setNotifications({
-            severity: "success",
-            message: `"${targetBlog.title}" ${targetBlog.author} is deleted.`,
-          })
-        );
-      } catch (err) {
-        dispatch(
-          setNotifications({
-            severity: "error",
-            message: "Failed Deleted Blog",
-          })
-        );
-      }
-    })();
+    void dispatchBlogs(removeBlog(targetBlog, dispatch));
   };
 
   const createBlogForm = () => (

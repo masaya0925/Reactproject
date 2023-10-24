@@ -28,11 +28,6 @@ export type NewBlog = {
   likes: number;
 };
 
-export type UpdateLikes = {
-  id: string;
-  likes: number;
-};
-
 export type RootState = {
   blogs: Blog[];
   notification: {
