@@ -26,8 +26,6 @@ export const updateLikes = async (blog: Blog) => {
   const response = await axios.patch<Blog>(`${baseUrl}/${blog.id}`, {
     likes: blog.likes,
   });
-  console.log(response);
-
   return response.data;
 };
 

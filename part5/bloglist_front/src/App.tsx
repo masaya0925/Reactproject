@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import { SingleBlog } from "./components/Blog";
-import { setToken } from "./services/blogs";
-import { login } from "./services/login";
 import { Blog, NewBlog, RootState, UserToken } from "./utils/types";
 import { Togglable } from "./components/Togglable";
 import { BlogForm } from "./components/BlogForm";
@@ -17,16 +15,20 @@ import { Notification } from "./components/Notification";
 import { useDispatch } from "react-redux";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
+import { getUser, logOutUser, loginUser } from "./reducers/userReducers";
 
 const App = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [user, setUser] = useState<UserToken | null>(null);
   const dispatch: ThunkDispatch<RootState, unknown, AnyAction> = useDispatch();
+  const dispatchUser: ThunkDispatch<UserToken, unknown, AnyAction> =
+    useDispatch();
   const dispatchBlogs: ThunkDispatch<Blog[], unknown, AnyAction> =
     useDispatch();
 
   const storeBlog = useSelector((state: RootState) => state.blogs);
+  const storeUser = useSelector((state: RootState) => state.user);
+  console.log(storeUser);
 
   useEffect(() => {
     try {
@@ -42,45 +44,31 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedBlogJSON = window.localStorage.getItem("loggedBlogappUser");
-    if (loggedBlogJSON) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const user: UserToken = JSON.parse(loggedBlogJSON);
-      setUser(user);
-      setToken(user.token);
-    }
+    void dispatchUser(getUser());
   }, []);
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
-    void (async () => {
-      event.preventDefault();
-      try {
-        const user = await login({ username, password });
-
-        window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-
-        setToken(user.token);
-        setUser(user);
-        setUsername("");
-        setPassword("");
-        dispatch(
-          setNotifications({
-            severity: "success",
-            message: `Welcome ${user.username}`,
-          })
-        );
-      } catch (err) {
-        console.log(err);
-        dispatch(
-          setNotifications({ severity: "error", message: "Login Failed" })
-        );
-      }
-    })();
+    event.preventDefault();
+    try {
+      void dispatchUser(loginUser(username, password));
+      setUsername("");
+      setPassword("");
+      dispatch(
+        setNotifications({
+          severity: "success",
+          message: `Welcome ${username}`,
+        })
+      );
+    } catch (err) {
+      console.log(err);
+      dispatch(
+        setNotifications({ severity: "error", message: "Login Failed" })
+      );
+    }
   };
 
   const handleLogout = () => {
-    setUser(null);
-    window.localStorage.removeItem("loggedBlogappUser");
+    void dispatchUser(logOutUser());
     dispatch(setNotifications({ severity: "success", message: "user logout" }));
   };
 
@@ -157,7 +145,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>
-        {user?.name} logged-in
+        {storeUser.name} logged-in
         <button type="button" onClick={handleLogout}>
           logout
         </button>
@@ -178,7 +166,7 @@ const App = () => {
   return (
     <>
       <Notification />
-      <div>{user === null ? renderLoginForm() : renderBlogList()}</div>
+      <div>{storeUser.name === "" ? renderLoginForm() : renderBlogList()}</div>
     </>
   );
 };

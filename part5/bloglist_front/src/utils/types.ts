@@ -34,4 +34,5 @@ export type RootState = {
     severity: "success" | "error";
     message: string;
   };
+  user: UserToken;
 };
