@@ -1,26 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Alert } from "@mui/material";
 
 import { SingleBlog } from "./components/Blog";
-import {
-  getAll,
-  setToken,
-  create,
-  updateLikes,
-  remove,
-} from "./services/blogs";
+import { getAll, setToken, updateLikes, remove } from "./services/blogs";
 import { login } from "./services/login";
-import { Blog, NewBlog, UserToken } from "./utils/types";
+import { Blog, UserToken } from "./utils/types";
 import { Togglable } from "./components/Togglable";
 import { BlogForm } from "./components/BlogForm";
 import { Notification } from "./components/Notification";
 import { useNotice } from "./NotificationContext";
+import { useQuery } from "@tanstack/react-query";
 
 const App = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [user, setUser] = useState<UserToken | null>(null);
@@ -28,22 +21,8 @@ const App = () => {
   const { setNotice } = useNotice();
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const blogs = await getAll();
-        blogs.sort((a, b) => b.likes - a.likes);
-        setBlogs(blogs);
-        setNotice({ severity: "success", message: "OK" });
-      } catch (error) {
-        setNotice({ severity: "error", message: "Unable to retrieve Blogs" });
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     const loggedBlogJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedBlogJSON) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const user: UserToken = JSON.parse(loggedBlogJSON);
       setUser(user);
       setToken(user.token);
@@ -62,17 +41,13 @@ const App = () => {
         setUser(user);
         setUsername("");
         setPassword("");
-        setSuccessMessage(`Welcome ${user.username}.`);
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 5000);
+        setNotice({
+          severity: "success",
+          message: `Welcome ${user.username}.`,
+        });
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          setErrorMessage(err.response?.data.error);
-          setTimeout(() => {
-            setErrorMessage("");
-          }, 5000);
+          setNotice({ severity: "error", message: err.response?.data.error });
         }
       }
     })();
@@ -81,10 +56,7 @@ const App = () => {
   const handleLogout = () => {
     setUser(null);
     window.localStorage.removeItem("loggedBlogappUser");
-    setSuccessMessage("Logged out.");
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 5000);
+    setNotice({ severity: "success", message: "Logged out." });
   };
 
   const loginForm = () => (
@@ -115,32 +87,6 @@ const App = () => {
     </form>
   );
 
-  const blogFormRef = useRef({} as { toggleVisibility: () => void });
-
-  const addBlog = (blogObject: NewBlog) => {
-    void (async () => {
-      try {
-        const returnedBlog = await create(blogObject);
-        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes));
-        blogFormRef.current.toggleVisibility();
-        setSuccessMessage(
-          `A new blog "${blogObject.title}" by ${blogObject.author} added.`
-        );
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 5000);
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          setErrorMessage(err.response?.data.error);
-          setTimeout(() => {
-            setErrorMessage("");
-          }, 5000);
-        }
-      }
-    })();
-  };
-
   const likeBlog = (targetBlog: Blog) => {
     void (async () => {
       try {
@@ -150,18 +96,13 @@ const App = () => {
             .map((blog) => (blog.id !== targetBlog.id ? blog : targetBlog))
             .sort((a, b) => b.likes - a.likes)
         );
-        setSuccessMessage(
-          `Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`
-        );
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 5000);
+        setNotice({
+          severity: "success",
+          message: `Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`,
+        });
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          setErrorMessage(err.response?.statusText);
-          setTimeout(() => {
-            setErrorMessage("");
-          }, 5000);
+          setNotice({ severity: "error", message: err.response?.data.error });
         }
       }
     })();
@@ -176,27 +117,23 @@ const App = () => {
             .filter((blog) => blog.id !== targetBlog.id)
             .sort((a, b) => b.likes - a.likes)
         );
-        setSuccessMessage(
-          `"${targetBlog.title}" ${targetBlog.author} is deleted.`
-        );
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 5000);
+        setNotice({
+          severity: "success",
+          message: `"${targetBlog.title}" ${targetBlog.author} is deleted.`,
+        });
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          setErrorMessage(err.response?.data.error);
-          setTimeout(() => {
-            setErrorMessage("");
-          }, 5000);
+          setNotice({ severity: "error", message: err.response?.data.error });
         }
       }
     })();
   };
 
+  const blogFormRef = useRef({} as { toggleVisibility: () => void });
+
   const createBlogForm = () => (
     <Togglable buttonLabel="new note" ref={blogFormRef}>
-      <BlogForm createBlog={addBlog} />
+      <BlogForm />
     </Togglable>
   );
 
@@ -206,6 +143,21 @@ const App = () => {
       {loginForm()}
     </div>
   );
+
+  const result = useQuery({
+    queryKey: ["blogs"],
+    queryFn: getAll,
+  });
+
+  if (result.isLoading) {
+    return <>loading now...</>;
+  }
+
+  if (result.data === undefined) {
+    return <>undefined data...</>;
+  }
+
+  const queryBlogs = result.data.sort((a, b) => b.likes - a.likes);
 
   const renderBlogList = () => (
     <div>
@@ -218,7 +170,7 @@ const App = () => {
       </p>
       <h2>create new</h2>
       {createBlogForm()}
-      {blogs.map((blog) => (
+      {queryBlogs.map((blog) => (
         <SingleBlog
           key={blog.id}
           blog={blog}
@@ -229,21 +181,9 @@ const App = () => {
     </div>
   );
 
-  const renderErrorMessage = () => (
-    <Alert id="error-message" severity="error">
-      {errorMessage}
-    </Alert>
-  );
-
-  const renderSuccessMessage = () => (
-    <Alert severity="success">{successMessage}</Alert>
-  );
-
   return (
     <>
       <Notification />
-      {errorMessage !== "" && renderErrorMessage()}
-      {successMessage !== "" && renderSuccessMessage()}
       <div>{user === null ? renderLoginForm() : renderBlogList()}</div>
     </>
   );
