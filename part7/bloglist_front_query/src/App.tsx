@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 import { SingleBlog } from "./components/Blog";
-import { getAll, setToken, updateLikes, remove } from "./services/blogs";
+import { getAll, setToken } from "./services/blogs";
 import { login } from "./services/login";
-import { Blog, UserToken } from "./utils/types";
+import { UserToken } from "./utils/types";
 import { Togglable } from "./components/Togglable";
 import { BlogForm } from "./components/BlogForm";
 import { Notification } from "./components/Notification";
@@ -13,7 +13,6 @@ import { useNotice } from "./NotificationContext";
 import { useQuery } from "@tanstack/react-query";
 
 const App = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [user, setUser] = useState<UserToken | null>(null);
@@ -87,48 +86,6 @@ const App = () => {
     </form>
   );
 
-  const likeBlog = (targetBlog: Blog) => {
-    void (async () => {
-      try {
-        await updateLikes(targetBlog);
-        setBlogs(
-          blogs
-            .map((blog) => (blog.id !== targetBlog.id ? blog : targetBlog))
-            .sort((a, b) => b.likes - a.likes)
-        );
-        setNotice({
-          severity: "success",
-          message: `Liked Blog Title: ${targetBlog.title}, Author:${targetBlog.author}`,
-        });
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setNotice({ severity: "error", message: err.response?.data.error });
-        }
-      }
-    })();
-  };
-
-  const deleteBlog = (targetBlog: Blog) => {
-    void (async () => {
-      try {
-        await remove(targetBlog);
-        setBlogs(
-          blogs
-            .filter((blog) => blog.id !== targetBlog.id)
-            .sort((a, b) => b.likes - a.likes)
-        );
-        setNotice({
-          severity: "success",
-          message: `"${targetBlog.title}" ${targetBlog.author} is deleted.`,
-        });
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setNotice({ severity: "error", message: err.response?.data.error });
-        }
-      }
-    })();
-  };
-
   const blogFormRef = useRef({} as { toggleVisibility: () => void });
 
   const createBlogForm = () => (
@@ -171,12 +128,7 @@ const App = () => {
       <h2>create new</h2>
       {createBlogForm()}
       {queryBlogs.map((blog) => (
-        <SingleBlog
-          key={blog.id}
-          blog={blog}
-          pushLikes={likeBlog}
-          pushDelete={deleteBlog}
-        />
+        <SingleBlog key={blog.id} blog={blog} />
       ))}
     </div>
   );

@@ -39,7 +39,7 @@ blogRouter.post("/", loginRequire, (req, res, next) => {
           author: body.author,
           url: body.url,
           likes: body.likes,
-          user: user._id,
+          user: user,
         });
         const savedBlog = await newBlog.save();
 
@@ -68,17 +68,19 @@ blogRouter.patch("/:id", (req, res) => {
     const body = req.body;
 
     const blog = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
       likes: body.likes,
-      user: body.user,
     };
 
     const update = await Blog.findByIdAndUpdate(req.params.id, blog, {
       new: true,
     });
-    res.status(200).json(update);
+
+    const populate = await Blog.findById(update._id).populate("user", {
+      username: 1,
+      name: 1,
+    });
+
+    res.status(200).json(populate);
   })();
 });
 
