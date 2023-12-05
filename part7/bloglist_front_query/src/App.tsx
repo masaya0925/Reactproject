@@ -11,19 +11,25 @@ import { BlogForm } from "./components/BlogForm";
 import { Notification } from "./components/Notification";
 import { useNotice } from "./NotificationContext";
 import { useQuery } from "@tanstack/react-query";
+import { useLoginContext } from "./UserContext";
 
 const App = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [user, setUser] = useState<UserToken | null>(null);
 
   const { setNotice } = useNotice();
 
+  const { dispatch, user } = useLoginContext();
+
   useEffect(() => {
-    const loggedBlogJSON = window.localStorage.getItem("loggedBlogappUser");
+    const loggedBlogJSON = window.localStorage.getItem("loggedBlogAppUser");
     if (loggedBlogJSON) {
       const user: UserToken = JSON.parse(loggedBlogJSON);
-      setUser(user);
+      dispatch({
+        type: "login",
+        user: { username: user.username, name: user.name, blogs: user.blogs },
+      });
+
       setToken(user.token);
     }
   }, []);
@@ -34,10 +40,17 @@ const App = () => {
       try {
         const user = await login({ username, password });
 
-        window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
+        window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
 
         setToken(user.token);
-        setUser(user);
+        dispatch({
+          type: "login",
+          user: {
+            username: user.username,
+            name: user.name,
+            blogs: user.blogs,
+          },
+        });
         setUsername("");
         setPassword("");
         setNotice({
@@ -53,8 +66,8 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    setUser(null);
-    window.localStorage.removeItem("loggedBlogappUser");
+    dispatch({ type: "logout", user: user });
+    window.localStorage.removeItem("loggedBlogAppUser");
     setNotice({ severity: "success", message: "Logged out." });
   };
 
@@ -120,7 +133,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>
-        {user?.name} logged-in
+        {user.name} logged-in
         <button type="button" onClick={handleLogout}>
           logout
         </button>
@@ -136,7 +149,7 @@ const App = () => {
   return (
     <>
       <Notification />
-      <div>{user === null ? renderLoginForm() : renderBlogList()}</div>
+      <div>{user.name === "" ? renderLoginForm() : renderBlogList()}</div>
     </>
   );
 };

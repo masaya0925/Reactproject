@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./App";
 import { NoticeContextProvider } from "./NotificationContext";
+import { LoginContextProvider } from "./UserContext";
 
 const queryClient = new QueryClient();
 
@@ -11,7 +12,9 @@ ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <NoticeContextProvider>
-        <App />
+        <LoginContextProvider>
+          <App />
+        </LoginContextProvider>
       </NoticeContextProvider>
     </QueryClientProvider>
   </React.StrictMode>,

@@ -92,6 +92,12 @@ blogRouter.delete("/:id", loginRequire, (req, res, next) => {
 
       if (blog.user.toString() === user.id.toString()) {
         await blog.delete();
+
+        user.blogs = user.blogs.filter(
+          (id) => id.toString() !== blog.id.toString()
+        );
+        await user.save();
+
         res.status(204).json("Successfully deleted.");
         return;
       } else {
