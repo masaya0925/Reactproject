@@ -2,6 +2,7 @@ import { useReducer } from "react";
 import { UserType } from "../utils/types";
 
 const initialState: UserType = {
+  id: "",
   username: "",
   name: "",
   blogs: [],
@@ -17,6 +18,7 @@ const reducer = (state: UserType, action: Action) => {
     case "login":
       return {
         ...state,
+        id: action.user.id,
         username: action.user.username,
         name: action.user.name,
         blogs: action.user.blogs,
@@ -24,6 +26,7 @@ const reducer = (state: UserType, action: Action) => {
     case "logout":
       return {
         ...state,
+        id: "",
         username: "",
         name: "",
         blogs: [],

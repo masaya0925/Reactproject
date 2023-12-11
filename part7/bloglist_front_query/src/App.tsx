@@ -2,36 +2,51 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-import { SingleBlog } from "./components/Blog";
 import { getAll, setToken } from "./services/blogs";
 import { login } from "./services/login";
-import { UserToken } from "./utils/types";
-import { Togglable } from "./components/Togglable";
-import { BlogForm } from "./components/BlogForm";
+import { UserToken, UserType } from "./utils/types";
 import { Notification } from "./components/Notification";
 import { useNotice } from "./NotificationContext";
 import { useQuery } from "@tanstack/react-query";
 import { useLoginContext } from "./UserContext";
+import { Route, Routes, useMatch } from "react-router-dom";
+import { UserList } from "./components/UserList";
+import { getAllUser } from "./services/users";
+import { BlogList } from "./components/BlogList";
+import { BlogForm } from "./components/BlogForm";
+import { Togglable } from "./components/Togglable";
+import { UserDetail } from "./components/User";
 
 const App = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [users, setUsers] = useState<UserType[]>([]);
 
   const { setNotice } = useNotice();
 
   const { dispatch, user } = useLoginContext();
 
-  useEffect(() => {
-    const loggedBlogJSON = window.localStorage.getItem("loggedBlogAppUser");
-    if (loggedBlogJSON) {
-      const user: UserToken = JSON.parse(loggedBlogJSON);
-      dispatch({
-        type: "login",
-        user: { username: user.username, name: user.name, blogs: user.blogs },
-      });
+  console.log("users: ", users);
 
-      setToken(user.token);
-    }
+  useEffect(() => {
+    void (async () => {
+      const loggedBlogJSON = window.localStorage.getItem("loggedBlogAppUser");
+      if (loggedBlogJSON) {
+        const user: UserToken = JSON.parse(loggedBlogJSON);
+        dispatch({
+          type: "login",
+          user: {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            blogs: user.blogs,
+          },
+        });
+        const allUsers = await getAllUser();
+        setUsers(allUsers);
+        setToken(user.token);
+      }
+    })();
   }, []);
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
@@ -46,6 +61,7 @@ const App = () => {
         dispatch({
           type: "login",
           user: {
+            id: user.id,
             username: user.username,
             name: user.name,
             blogs: user.blogs,
@@ -113,6 +129,11 @@ const App = () => {
       {loginForm()}
     </div>
   );
+  const match = useMatch("/user/:id");
+
+  const userDetail = match
+    ? users.find((user) => user.id === match.params.id)
+    : null;
 
   const result = useQuery({
     queryKey: ["blogs"],
@@ -138,11 +159,12 @@ const App = () => {
           logout
         </button>
       </p>
-      <h2>create new</h2>
       {createBlogForm()}
-      {queryBlogs.map((blog) => (
-        <SingleBlog key={blog.id} blog={blog} />
-      ))}
+      <Routes>
+        <Route path="/user/:id" element={<UserDetail user={userDetail} />} />
+        <Route path="/user" element={<UserList users={users} />} />
+        <Route path="/" element={<BlogList blogs={queryBlogs} />} />
+      </Routes>
     </div>
   );
 

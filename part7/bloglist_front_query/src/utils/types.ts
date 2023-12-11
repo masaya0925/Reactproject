@@ -8,16 +8,18 @@ export type Blog = {
 };
 
 export type UserToken = {
+  id: string;
   username: string;
   name: string;
-  blogs: string[];
+  blogs: Blog[];
   token: string;
 };
 
 export type UserType = {
+  id: string;
   username: string;
   name: string;
-  blogs: string[];
+  blogs: Blog[];
 };
 
 export type NewBlog = {
