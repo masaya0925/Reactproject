@@ -16,6 +16,8 @@ import { BlogList } from "./components/BlogList";
 import { BlogForm } from "./components/BlogForm";
 import { Togglable } from "./components/Togglable";
 import { UserDetail } from "./components/User";
+import { BlogDetail } from "./components/BlogDetail";
+import { Menu } from "./components/Menu";
 
 const App = () => {
   const [username, setUsername] = useState<string>("");
@@ -129,10 +131,12 @@ const App = () => {
       {loginForm()}
     </div>
   );
-  const match = useMatch("/user/:id");
+  const userMatch = useMatch("/user/:id");
 
-  const userDetail = match
-    ? users.find((user) => user.id === match.params.id)
+  const blogMatch = useMatch("/blogs/:id");
+
+  const userDetail = userMatch
+    ? users.find((user) => user.id === userMatch.params.id)
     : null;
 
   const result = useQuery({
@@ -150,17 +154,22 @@ const App = () => {
 
   const queryBlogs = result.data.sort((a, b) => b.likes - a.likes);
 
+  const blogDetail = blogMatch
+    ? queryBlogs.find((blog) => blog.id === blogMatch.params.id)
+    : null;
+
   const renderBlogList = () => (
     <div>
-      <h2>blogs</h2>
       <p>
-        {user.name} logged-in
+        <Menu /> {user.name} logged-in
         <button type="button" onClick={handleLogout}>
           logout
         </button>
       </p>
+      <h2>blogs</h2>
       {createBlogForm()}
       <Routes>
+        <Route path="/blogs/:id" element={<BlogDetail blog={blogDetail} />} />
         <Route path="/user/:id" element={<UserDetail user={userDetail} />} />
         <Route path="/user" element={<UserList users={users} />} />
         <Route path="/" element={<BlogList blogs={queryBlogs} />} />
