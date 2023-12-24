@@ -63,6 +63,24 @@ blogRouter.post("/", loginRequire, (req, res, next) => {
   })();
 });
 
+blogRouter.post("/:id/comment", (req, res) => {
+  void (async () => {
+    const { comment } = req.body;
+
+    const blog = await Blog.findById(req.params.id);
+
+    if (req.body === undefined) {
+      res.status(400).end();
+    } else {
+      blog.comment.push(comment);
+      await blog.save();
+
+      const update = await Blog.findById(req.params.id);
+      res.status(200).json(update);
+    }
+  })();
+});
+
 blogRouter.patch("/:id", (req, res) => {
   void (async () => {
     const body = req.body;

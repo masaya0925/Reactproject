@@ -73,7 +73,7 @@ export const BlogDetail = ({ blog }: PropsBlog) => {
     <>
       <h1>{blog.title}</h1>
 
-      <a href={`${blog.url}`} />
+      <a href={""}>{blog.url}</a>
       <p>
         {blog.likes} likes
         <IconButton
@@ -93,6 +93,12 @@ export const BlogDetail = ({ blog }: PropsBlog) => {
       >
         Delete
       </Button>
+      <h3>comment</h3>
+      <ul>
+        {blog.comment.map((c) => (
+          <li key={c}>{c}</li>
+        ))}
+      </ul>
     </>
   );
 };

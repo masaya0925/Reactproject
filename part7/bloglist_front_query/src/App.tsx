@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import { getAll, setToken } from "./services/blogs";
@@ -13,8 +13,6 @@ import { Route, Routes, useMatch } from "react-router-dom";
 import { UserList } from "./components/UserList";
 import { getAllUser } from "./services/users";
 import { BlogList } from "./components/BlogList";
-import { BlogForm } from "./components/BlogForm";
-import { Togglable } from "./components/Togglable";
 import { UserDetail } from "./components/User";
 import { BlogDetail } from "./components/BlogDetail";
 import { Menu } from "./components/Menu";
@@ -27,8 +25,6 @@ const App = () => {
   const { setNotice } = useNotice();
 
   const { dispatch, user } = useLoginContext();
-
-  console.log("users: ", users);
 
   useEffect(() => {
     void (async () => {
@@ -117,14 +113,6 @@ const App = () => {
     </form>
   );
 
-  const blogFormRef = useRef({} as { toggleVisibility: () => void });
-
-  const createBlogForm = () => (
-    <Togglable buttonLabel="new note" ref={blogFormRef}>
-      <BlogForm />
-    </Togglable>
-  );
-
   const renderLoginForm = () => (
     <div>
       <h2>log in to application</h2>
@@ -167,7 +155,6 @@ const App = () => {
         </button>
       </p>
       <h2>blogs</h2>
-      {createBlogForm()}
       <Routes>
         <Route path="/blogs/:id" element={<BlogDetail blog={blogDetail} />} />
         <Route path="/user/:id" element={<UserDetail user={userDetail} />} />

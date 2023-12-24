@@ -5,6 +5,7 @@ export type Blog = {
   url: string;
   likes: number;
   user: Omit<UserType, "blog">;
+  comment: string[];
 };
 
 export type UserToken = {
