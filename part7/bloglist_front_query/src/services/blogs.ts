@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Blog, NewBlog, UpdateLikes } from "../utils/types";
+import { Blog, CommentType, NewBlog, UpdateLikes } from "../utils/types";
 
 const baseUrl = "/api/blogs";
 
@@ -34,5 +34,16 @@ export const remove = async (blog: Blog) => {
     headers: { Authorization: token },
   };
   const response = await axios.delete<null>(`${baseUrl}/${blog.id}`, config);
+  return response.data;
+};
+
+export const postComment = async (comment: CommentType) => {
+  const response = await axios.post<string>(
+    `${baseUrl}/${comment.id}/comment`,
+    {
+      comment: comment.content,
+    }
+  );
+
   return response.data;
 };

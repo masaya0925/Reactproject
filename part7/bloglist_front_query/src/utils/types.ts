@@ -35,6 +35,11 @@ export type UpdateLikes = {
   likes: number;
 };
 
+export type CommentType = {
+  id: string;
+  content: string;
+};
+
 export type NotificationType = {
   severity: "success" | "error";
   message: string;
