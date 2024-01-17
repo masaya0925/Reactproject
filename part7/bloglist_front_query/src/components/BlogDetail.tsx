@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Blog } from "../utils/types";
-import { Button, IconButton } from "@mui/material";
-import Like from "@mui/icons-material/Favorite";
+import { Button } from "@mui/material";
 import DeletedIcon from "@mui/icons-material/Delete";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useNotice } from "../NotificationContext";
@@ -92,19 +91,29 @@ export const BlogDetail = ({ blog }: PropsBlog) => {
   };
 
   return (
-    <>
-      <h1>{blog.title}</h1>
+    <div className="prose-xl">
+      <p></p>
+      <h2>{blog.title}</h2>
 
       <a href={""}>{blog.url}</a>
       <p>
-        {blog.likes} likes
-        <IconButton
-          id="likeButton"
-          style={{ color: "pink" }}
-          onClick={pushLikes}
-        >
-          <Like />
-        </IconButton>
+        <button className="btn btn-outline btn-info" onClick={pushLikes}>
+          {blog.likes}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="pink"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
       </p>
       <p> Added by {blog.user.name}</p>
       <Button
@@ -120,10 +129,12 @@ export const BlogDetail = ({ blog }: PropsBlog) => {
         <p>
           <input
             id="comment"
+            placeholder="comment here..."
+            className="input input-bordered input-sm w-full max-w-xs m-0.5"
             value={comment}
             onChange={({ target }) => setComment(target.value)}
           />
-          <button id="submit" type="submit">
+          <button id="submit" type="submit" className="btn btn-sm m-0.5">
             add comment
           </button>
         </p>
@@ -133,6 +144,6 @@ export const BlogDetail = ({ blog }: PropsBlog) => {
           <li key={c}>{c}</li>
         ))}
       </ul>
-    </>
+    </div>
   );
 };

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import "./index.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -88,33 +89,35 @@ const App = () => {
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
-        username
         <input
           id="username"
           type="text"
+          placeholder="username"
+          className="input input-bordered input-sm w-full max-w-xs m-0.5"
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
       <div>
-        password
         <input
           id="password"
           type="password"
+          placeholder="password"
+          className="input input-bordered input-sm w-full max-w-xs m-0.5"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button id="login-button" type="submit">
+      <button id="login-button" type="submit" className="btn btn-sm m-0.5">
         login
       </button>
     </form>
   );
 
   const renderLoginForm = () => (
-    <div>
+    <div className="prose-lg">
       <h2>log in to application</h2>
       {loginForm()}
     </div>
@@ -147,14 +150,8 @@ const App = () => {
     : null;
 
   const renderBlogList = () => (
-    <div>
-      <p>
-        <Menu /> {user.name} logged-in
-        <button type="button" onClick={handleLogout}>
-          logout
-        </button>
-      </p>
-      <h2>blogs</h2>
+    <div className="prose-lg">
+      <Menu LogOut={handleLogout} user={user} />
       <Routes>
         <Route path="/blogs/:id" element={<BlogDetail blog={blogDetail} />} />
         <Route path="/user/:id" element={<UserDetail user={userDetail} />} />
@@ -165,10 +162,10 @@ const App = () => {
   );
 
   return (
-    <>
+    <div data-theme="nord">
       <Notification />
       <div>{user.name === "" ? renderLoginForm() : renderBlogList()}</div>
-    </>
+    </div>
   );
 };
 

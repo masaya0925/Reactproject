@@ -20,9 +20,13 @@ export const BlogList = ({ blogs }: PropsBlogs) => {
   return (
     <div>
       {createBlogForm()}
-      {blogs.map((blog) => (
-        <SingleBlog key={blog.id} blog={blog} />
-      ))}
+      <ul>
+        {blogs.map((blog) => (
+          <li key={blog.id}>
+            <SingleBlog blog={blog} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

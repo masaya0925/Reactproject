@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from "react";
-import { Card, CardContent } from "@mui/material";
-
 import { Blog } from "../utils/types";
-import { Link } from "react-router-dom";
 
 type Props = {
   blog: Blog;
@@ -13,14 +10,20 @@ export const SingleBlog: React.FC<Props> = (props: Props) => {
   const blog = props.blog;
 
   return (
-    <Card variant="outlined" className="blogCard">
-      <CardContent>
-        <p>
-          <Link to={`/blogs/${blog.id}`}>
-            {blog.title} {blog.author}
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+    <div className="card h-90 bg-base-200 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">{blog.title}</h2>
+        <p>{blog.author}</p>
+        <div className="card-actions justify-end">
+          <a
+            role="button"
+            className="btn btn-primary"
+            href={`/blogs/${blog.id}`}
+          >
+            Show Detail
+          </a>
+        </div>
+      </div>
+    </div>
   );
 };

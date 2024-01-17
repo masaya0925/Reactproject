@@ -55,30 +55,33 @@ export const BlogForm: React.FC = () => {
     <>
       <form onSubmit={addBlog}>
         <div>
-          title
           <input
             id="title"
+            placeholder="title"
+            className="input input-bordered input-sm w-full max-w-xs m-0.5"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
-          author
           <input
             id="author"
+            placeholder="author"
+            className="input input-bordered input-sm w-full max-w-xs m-0.5"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
-          url
           <input
             id="url"
+            placeholder="url"
+            className="input input-bordered input-sm w-full max-w-xs m-0.5"
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button id="submit" type="submit">
+        <button id="submit" type="submit" className="btn btn-sm m-0.5">
           create
         </button>
       </form>

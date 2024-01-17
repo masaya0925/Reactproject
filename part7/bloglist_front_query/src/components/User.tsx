@@ -10,9 +10,14 @@ export const UserDetail = ({ user }: PropsUser) => {
   if (user.blogs.length === 0) {
     return (
       <>
-        <span style={{ padding: "3em" }}>
-          <i>blogs not found...</i>
-        </span>
+        <div className="mockup-browser border border-base-300">
+          <div className="mockup-browser-toolbar">
+            <div className="input border border-base-300"></div>
+          </div>
+          <div className="flex justify-center px-4 py-16 border-t border-base-300">
+            Blogs not found...
+          </div>
+        </div>
       </>
     );
   }
